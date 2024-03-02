@@ -1,0 +1,201 @@
+I
+1100 Version
+JOY
+
+OS: Mac
+
+Name: Bravo Throttle Quadrant
+
+ID: VID:0x294bPID:0x1901
+
+Assignments:
+--------------------------------------------------------------
+# FORMAT FOR AXES:
+# Axis <axis number>: hidden
+# Axis <axis number>: <joy use>
+
+Axis 0: joy_use_thro1
+Axis 1: joy_use_sbrk
+Axis 2: joy_use_thro4
+Axis 3: joy_use_thro3
+Axis 4: joy_use_thro2
+Axis 5: joy_use_flap
+
+# FORMAT FOR BUTTONS:
+# Button <button number>: hidden
+# Button <button number>: <command path, like "sim/operation/quit">
+#	See X-Plane/Resources/plugins/Commands.txt for a complete list of commands
+
+Button 0: sim/autopilot/heading
+Button 1: sim/autopilot/hdg_nav
+Button 2: sim/autopilot/approach
+Button 3: sim/autopilot/back_course
+Button 4: sim/autopilot/altitude_hold
+Button 5: sim/autopilot/vertical_speed
+Button 6: sim/autopilot/autothrottle_toggle
+Button 7: sim/autopilot/servos_toggle
+
+Button 8: 
+Button 9: 
+Button 10: 
+Button 11: 
+Button 12: 
+Button 13: 
+Button 14: sim/flight_controls/flaps_down
+Button 15: sim/flight_controls/flaps_up
+Button 16: 
+Button 17: 
+Button 18: 
+Button 19: 
+Button 20: 
+Button 21: sim/flight_controls/pitch_trim_down
+Button 22: sim/flight_controls/pitch_trim_up
+Button 23: 
+Button 24: 
+Button 25: 
+Button 26: 
+Button 27: 
+Button 28: 
+Button 29: 
+Button 30: sim/flight_controls/landing_gear_up
+Button 31: sim/flight_controls/landing_gear_down
+Button 32: 
+Button 33: 
+Button 34: 
+Button 35: 
+Button 36: 
+Button 37: 
+Button 38: 
+Button 39: 
+Button 40:
+Button 41: 
+Button 42: 
+Button 43: 
+Button 44: 
+Button 45: 
+Button 46: 
+
+
+View: Switches & Autopilot
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_Switches.png
+
+Button 0 (HDG): 367 50
+Button 1 (NAV): 425 58
+Button 2 (APR): 478 65
+Button 3 (REV): 535 72
+Button 4 (ALT): 590 78
+Button 5 (CRS): 650 85
+Button 6 (IAS): 710 90
+Button 7 (AUTOPILOT): 930 110
+
+Button 15 (Flaps up): 955 335
+Button 14 (Flaps down): 955 440
+
+# AP incr/decr
+Button 12 (INCR): 824 110
+Button 13 (DECR): 759 110
+
+# AP dial
+Button 16 (IAS): 242 117
+Button 17 (CRS): 236 94
+Button 18 (HDG): 236 72
+Button 19 (VS): 239 49
+Button 20 (ALT): 253 29
+
+Button 30 (Gear Up): 130 200
+Button 31 (Gear Down): 145 375
+
+Button 33 (13): 305 250
+Button 34 (14): 300 340
+Button 35 (15): 370 250
+Button 36 (16): 365 355
+Button 37 (17): 440 255
+Button 38 (18): 430 360
+Button 39 (19): 510 260
+Button 40 (20): 500 375
+Button 41 (21): 580 270
+Button 42 (22): 565 385
+Button 43 (23): 650 275
+Button 44 (24): 630 395
+Button 45 (25): 720 290
+Button 46 (26): 705 405
+
+View: GA Throttles
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_GAThrottle.png
+
+Axis 1 (Left throttle; y): 235 605
+Axis 0 (Right throttle; y): 345 605
+Axis 4 (Left prop; y): 455 605
+Axis 3 (Right prop; y): 565 605
+Axis 2 (Left mixture; y): 680 605
+Axis 5 (Right mixture; y): 785 605
+
+Button 21 (Trim wheel down): 180 335
+Button 22 (Trim wheel up): 180 575
+
+Button 23: 295 535
+Button 24: 385 535
+Button 25: 475 535
+Button 26: 565 535
+Button 27: 655 535
+Button 28 (Go Around): 215 75
+Button 32: 745 535
+
+View: Commercial 4 Engine Throttles
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_CoThrottle.png
+
+# buttons triggered on reverser levers
+Button 8 (Eng 1 rev): 355 290
+Button 9 (Eng 2 rev): 440 290
+Button 10 (Eng 3 rev): 570 290
+Button 11 (Eng 4 rev): 670 290
+
+# buttons at bottom of axes ranges
+Button 23: 295 535
+Button 24: 385 535
+Button 25: 475 535
+Button 26: 565 535
+Button 27: 655 535
+Button 32: 745 535
+
+Button 28 (Red): 285 402
+
+Button 21 (Trim wheel down): 119 541
+Button 22 (Trim wheel up): 86 650
+
+Axis 1 (Speed Brake; y): 235 605
+Axis 0 (Throttle 1; y): 345 605
+Axis 4 (Throttle 2; y): 455 605
+Axis 3 (Throttle 3; y): 565 605
+Axis 2 (Throttle 4; y): 680 605
+Axis 5 (Flap; y): 785 605
+
+View: Commercial 2 Engine Throttles 
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_Co2Throttle.png
+
+Axis 1 (Speed Brake; y): 235 605
+Axis 0 (Unused; y): 345 605
+Axis 4 (Throttle 1; y): 455 605
+Axis 3 (Throttle 2; y): 565 605
+Axis 2 (Unused; y): 680 605
+Axis 5 (Flaps; y): 785 605
+
+Button 9 (Eng 1 rev): 431 152
+Button 10 (Eng 2 rev): 583 158
+
+Button 29 (Red button): 445 265
+
+Button 21 (Trim wheel down): 203 416
+Button 22 (Trim wheel up): 198 519
+
+# buttons at bottom of axes ranges
+Button 23: 295 535
+Button 24: 385 535
+Button 25: 475 535
+Button 26: 565 535
+Button 27: 655 535
+Button 32: 745 535

@@ -1,0 +1,148 @@
+I
+1100 Version
+JOY
+
+# NOTE:
+# If X-Plane did not come with a default configuration for your device,
+# and you would like to share *your* configuration with the world,
+# email this file to tyler+joysticks@x-plane.com and we will evaluate
+# it for inclusion with the simulator. Thanks!!
+
+# You can find a complete spec for this file format, with instructions on configuring
+# both the device views and the default configuration here:
+# http://lookup.x-plane.com/_lookup_11_/joy_file_spec.html
+
+# One or more operating systems this file applies to.
+# Windows, macOS, and Linux will index the axes differently, so a file
+# that correctly configures your joystick on one platform is *not*
+# guaranteed to work on the other.
+# OS: Windows
+# Other valid options:
+OS: Linux
+# OS: Mac
+
+# Zero or more device names (provided by the operating system, as seen in the UI)
+# that this .joy file describes.
+# (Note that you need at least one name or one ID, described below.)
+# If more than one device is named, we're saying that *any* of those devices should be configured
+# using the *same* defaults and the same image maps.
+Name: Bravo Throttle Quadrant
+
+# Zero or more USB identifiers (vendor ID + product ID) that this .joy file describes.
+# (Note that you need at least one ID or Name, described above.)
+# If more than USB identifier is given, we'll use this .joy file to configure *any* of those devices.
+ID: VID:0x294bPID:0x1901
+
+Assignments:
+--------------------------------------------------------------
+# FORMAT FOR AXES:
+# Axis <axis number>: hidden
+# Axis <axis number>: <joy use>
+
+Axis 0: joy_use_sbrk
+Axis 1: joy_use_thro1
+Axis 2: joy_use_thro2
+Axis 3: joy_use_thro3
+Axis 4: joy_use_thro4
+Axis 5: joy_use_flap
+
+Button 0: sim/autopilot/heading
+Button 1: sim/autopilot/hdg_nav
+Button 2: sim/autopilot/approach
+Button 3: sim/autopilot/back_course
+Button 4: sim/autopilot/altitude_hold
+Button 5: sim/autopilot/vertical_speed
+Button 6: sim/autopilot/autothrottle_toggle
+Button 7: sim/autopilot/servos_toggle
+
+Button 14: sim/flight_controls/flaps_down
+Button 15: sim/flight_controls/flaps_up
+
+Button 21: sim/flight_controls/pitch_trim_down
+Button 22: sim/flight_controls/pitch_trim_up
+
+Button 30: sim/flight_controls/landing_gear_up
+Button 31: sim/flight_controls/landing_gear_down
+
+# FORMAT FOR BUTTONS:
+# Button <button number>: hidden
+# Button <button number>: <command path, like "sim/operation/quit">
+#	See X-Plane/Resources/plugins/Commands.txt for a complete list of commands
+
+
+# FORMAT FOR HAT SWITCHES:
+# Hat Switch <hat switch number>: hidden
+# Hat Switch <hat switch number> Direction <hat switch direction>: <command path, like "sim/operation/quit">
+#	See X-Plane/Resources/plugins/Commands.txt for a complete list of commands
+
+View: Switches
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_Switches.png
+
+Button 0 (1): 367 50
+Button 1 (2): 425 58
+Button 2 (3): 478 65
+Button 3 (4): 535 72
+Button 4 (5): 590 78
+Button 5 (6): 650 85
+Button 6 (7): 710 90
+Button 7 (8): 930 110
+
+Button 15 (9): 955 335
+Button 14 (10): 955 440
+
+Button 30 (11): 130 200
+Button 31 (12): 145 375
+
+Button 33 (13): 305 250
+Button 34 (14): 300 340
+Button 35 (15): 370 250
+Button 36 (16): 365 355
+Button 37 (17): 440 255
+Button 38 (18): 430 360
+Button 39 (19): 510 260
+Button 40 (20): 500 375
+Button 41 (21): 580 270
+Button 42 (22): 565 385
+Button 43 (23): 650 275
+Button 44 (24): 630 395
+Button 45 (25): 720 290
+Button 46 (26): 705 405
+
+View: Throttle Buttons (GA)
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_GAThrottle.png
+
+Button 21 (1): 180 335
+Button 22 (2): 180 575
+
+Button 23 (3): 295 535
+Button 24 (4): 385 535
+Button 25 (5): 475 535
+Button 26 (6): 565 535
+Button 27 (7): 655 535
+Button 28 (8): 215 75
+Button 32 (9): 745 535
+
+View: Throttle Buttons (Commercial)
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_CoThrottle.png
+
+Button 8 (1): 355 290
+Button 9 (2): 440 290
+Button 10 (3): 570 290
+Button 11 (4): 670 290
+
+Axis 0 (Lever 1; y): 235 605
+Axis 1 (Lever 2; y): 345 605
+Axis 2 (Lever 3; y): 455 605
+Axis 3 (Lever 4; y): 565 605
+Axis 4 (Lever 5; y): 680 605
+Axis 5 (Lever 6; y): 785 605
+
+View: Throttle Buttons (Commercial Two)
+-----------------------------------------------------------------------
+Image: HoneycombBravoThrottleQuadrant_Co2Throttle.png
+
+Button 29 (1): 445 265
+
