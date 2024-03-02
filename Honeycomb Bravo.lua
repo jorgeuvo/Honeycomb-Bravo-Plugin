@@ -1,7 +1,7 @@
 -- Honeycomb Bravo Mac - a Honeycomb Bravo Apple silicon driver
 -- Based on HoneycombBravoHelper for Linux https://gitlab.com/honeycomb-xplane-linux
 -- Author:		Daniel Peukert
--- Version:		0.0.9
+-- Version:		0.0.10
 -- License:		GNU GPLv3
 -- Modified for MacOS by Joe Milligan
 -- 12/24/2023 - Jorge Uvo - v0.0.4:	Modified from the original HoneycombBravoMacHelper v0.0.3.
@@ -17,11 +17,12 @@
 -- 01/27/2024 - Jorge Uvo - v0.0.9:	Fixed issue with LEDs not turning on.
 --					Code clean up.
 --					Typo fixed.
+-- 01/28/2024 - Jorge Uvo - v0.0.10:	Fixed VS above 1000 fps for B738.
 
 local bravo = hid_open(10571, 6401)
 
 function write_log(message)
-	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo Mac v0.0.9]: ' .. message)
+	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo Mac v0.0.10]: ' .. message)
 end
 
 if bravo == nil then
@@ -147,9 +148,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -473,7 +474,6 @@ function change_value(increase)
 			airspeed[0] = math.max(0, (math.floor((airspeed[0] * 100) + 0.5) + (sign * factor)) / 100) -- changed for kts in else below, have not tested this yet
 		else
 			airspeed[0] = math.max(0, (math.floor(airspeed[0]) + (sign * factor)))
-			-- airspeed[0] = airspeed[0] + sign
 		end
 	elseif mode == 'CRS' then
 		if course[0] == 0 and sign == -1 then
@@ -488,12 +488,9 @@ function change_value(increase)
 			heading[0] = (heading[0] + (sign * factor)) % 360
 		end
 	elseif mode == 'VS' then
-		-- vs[0] = math.floor((vs[0] / 100) + (50 * sign * factor)) * 100
-		vs[0] = vs[0] + (50 * sign * factor)
-		-- vs_string = 'vs = ' .. vs[0]
+		vs[0] = math.floor((vs[0] / 100) + (sign * factor)) * 100
 	elseif mode == 'ALT' then
 		altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
-		-- alt_string = 'alt = ' .. altitude[0]
 	end
 	last_mode = mode
 	last_time = os.clock()
@@ -594,9 +591,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -919,7 +916,6 @@ function change_value(increase)
 			airspeed[0] = math.max(0, (math.floor((airspeed[0] * 100) + 0.5) + (sign * factor)) / 100) -- changed for kts in else below, have not tested this yet
 		else
 			airspeed[0] = math.max(0, (math.floor(airspeed[0]) + (sign * factor)))
-			-- airspeed[0] = airspeed[0] + sign
 		end
 	elseif mode == 'CRS' then
 		if course[0] == 0 and sign == -1 then
@@ -934,12 +930,9 @@ function change_value(increase)
 			heading[0] = (heading[0] + (sign * factor)) % 360
 		end
 	elseif mode == 'VS' then
-		-- vs[0] = math.floor((vs[0] / 100) + (50 * sign * factor)) * 100
 		vs[0] = vs[0] + (50 * sign * factor)
-		-- vs_string = 'vs = ' .. vs[0]
 	elseif mode == 'ALT' then
 		altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
-		-- alt_string = 'alt = ' .. altitude[0]
 	end
 	last_mode = mode
 	last_time = os.clock()
@@ -1077,9 +1070,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -1402,7 +1395,6 @@ function change_value(increase)
 			airspeed[0] = math.max(0, (math.floor((airspeed[0] * 100) + 0.5) + (sign * factor)) / 100) -- changed for kts in else below, have not tested this yet
 		else
 			airspeed[0] = math.max(0, (math.floor(airspeed[0]) + (sign * factor)))
-			-- airspeed[0] = airspeed[0] + sign
 		end
 	elseif mode == 'CRS' then
 		if course[0] == 0 and sign == -1 then
@@ -1417,12 +1409,9 @@ function change_value(increase)
 			heading[0] = (heading[0] + (sign * factor)) % 360
 		end
 	elseif mode == 'VS' then
-		-- vs[0] = math.floor((vs[0] / 100) + (50 * sign * factor)) * 100
 		vs[0] = vs[0] + (50 * sign * factor)
-		-- vs_string = 'vs = ' .. vs[0]
 	elseif mode == 'ALT' then
 		altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
-		-- alt_string = 'alt = ' .. altitude[0]
 	end
 	last_mode = mode
 	last_time = os.clock()
