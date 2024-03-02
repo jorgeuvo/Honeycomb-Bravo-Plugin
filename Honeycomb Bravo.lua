@@ -1570,8 +1570,6 @@ local LED_ANC_DOOR =		{4, 4}
     -- Datarefs configuration for Default Aircrafts.
 
 	-- Autopilot
-	local hdg = dataref_table('sim/cockpit2/autopilot/heading_mode')
-	local nav = dataref_table('sim/cockpit2/autopilot/nav_status')
 	local apr = dataref_table('sim/cockpit2/autopilot/approach_status')
 	local rev = dataref_table('sim/cockpit2/autopilot/backcourse_status')
 	local alt = dataref_table('sim/cockpit2/autopilot/altitude_hold_status')
