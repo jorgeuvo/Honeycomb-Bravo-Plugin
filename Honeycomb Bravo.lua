@@ -1,4 +1,4 @@
--- Honeycomb Bravo Plugin Script version v1.1.0
+-- Honeycomb Bravo Plugin Script version v1.1.1
 -- Based on HoneycombBravoHelper for Linux https://gitlab.com/honeycomb-xplane-linux from Daniel Peukert
 -- License:		GNU GPLv3
 
@@ -18,13 +18,15 @@
 --		Typos fixed.
 -- 0.0.10:	Fixed VS above 1000 fps for B738.
 -- 1.0.0:	Initial public version.
--- 1.1.0:	Add C172 profile, by Plam55.
+-- 1.1.0:	Add C172 SKYHAWK profile, by Plam55.
 --		Code clean up.
+-- 1.1.1:	Fixed issue with C172 G1000 Autopilot Altitude knob function.
+--		Add SR22 profile, by Plam55
 
 local bravo = hid_open(10571, 6401)
 
 function write_log(message)
-	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo v1.1.0]: ' .. message)
+	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo v1.1.1]: ' .. message)
 end
 
 if bravo == nil then
@@ -40,6 +42,8 @@ elseif PLANE_ICAO == "BE9L" then
 	write_log('INFO Running BE9L profile.')
 elseif PLANE_ICAO == "C172" then
 	write_log('INFO Running C172 profile.')
+elseif PLANE_ICAO == "SR22" then
+	write_log('INFO Running SR22 configuration.')
 else
 	write_log('INFO Running XP default aircraft profile.')
 end
@@ -152,9 +156,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -595,9 +599,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -997,10 +1001,10 @@ for i = 1, 8 do
 	)
 end
 
-elseif PLANE_ICAO == "C172" then
+elseif PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
 
--- ************************* CONFIGURATION FOR C172 ******************************
--- LED definitions for Default Aircrafts.
+-- ************************* CONFIGURATION FOR CESSNA 172 SKYHAWK, Cessna G1000, Cirrus 22 ******************************
+-- LED definitions for C172 SKYHAWK, C172 G1000 and SR22 Aircrafts.
 local LED_FCU_HDG =			{1, 1}
 local LED_FCU_NAV =			{1, 2}
 local LED_FCU_APR =			{1, 3}
@@ -1075,9 +1079,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -1092,7 +1096,7 @@ local LED_ANC_DOOR =		{4, 4}
 	-- Bus voltage as a master LED switch
 	local bus_voltage = dataref_table('sim/cockpit2/electrical/bus_volts')
 
-    -- Datarefs configuration for Default Aircrafts.
+    -- Datarefs configuration for C172 SKYHAWK, C172 G1000 and SR22 Aircrafts.
 
 	-- Autopilot
 	local hdg = dataref_table('sim/cockpit2/autopilot/heading_mode')
@@ -1322,13 +1326,19 @@ create_command(
 	''
 )
 
--- Commands for changing values of the selected autopilot mode with the rotary encoder for Default Aircrafts.
+-- Commands for changing values of the selected autopilot mode with the rotary encoder for C172 SKYHAWK, C172 G1000 and SR22.
 local airspeed_is_mach = dataref_table('sim/cockpit2/autopilot/airspeed_is_mach')
 local airspeed = dataref_table('sim/cockpit2/autopilot/airspeed_dial_kts_mach')
 local course = dataref_table('sim/cockpit2/radios/actuators/nav1_obs_deg_mag_pilot')
 local heading = dataref_table('sim/cockpit2/autopilot/heading_dial_deg_mag_pilot')
 local vs = dataref_table('sim/cockpit2/autopilot/vvi_dial_fpm')
-local altitude = dataref_table('sim/cockpit/autopilot/current_altitude')
+
+-- local altitude
+if PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
+	altitude = dataref_table('sim/cockpit/autopilot/current_altitude')
+else
+	altitude = dataref_table('sim/cockpit2/autopilot/altitude_dial_ft')	
+end
 
 -- Acceleration parameters
 local last_mode = mode
@@ -1463,6 +1473,7 @@ for i = 1, 8 do
 end
 
 else
+
 -- ****************************** CONFIGURATION FOR DEFAULT AIRCRAFTS ******************************
 -- LED definitions for Default Aircrafts.
 local LED_FCU_HDG =			{1, 1}
@@ -1539,9 +1550,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo v1.1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
