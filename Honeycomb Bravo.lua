@@ -1,28 +1,28 @@
--- Honeycomb Bravo Mac - a Honeycomb Bravo Apple silicon driver
--- Based on HoneycombBravoHelper for Linux https://gitlab.com/honeycomb-xplane-linux
--- Author:		Daniel Peukert
--- Version:		0.0.10
+-- Honeycomb Bravo Plugin Script version 1.0
+-- Based on HoneycombBravoHelper for Linux https://gitlab.com/honeycomb-xplane-linux from Daniel Peukert
 -- License:		GNU GPLv3
--- Modified for MacOS by Joe Milligan
--- 12/24/2023 - Jorge Uvo - v0.0.4:	Modified from the original HoneycombBravoMacHelper v0.0.3.
---					Modified for ZIBO B738.
--- 01/21/2024 - Jorge Uvo - v0.0.5:	Merged with the HoneycombBravoMacZIBOv1.5 from Alfiepops.
--- 01/21/2024 - Jorge Uvo - v0.0.6:	Fixed compatibility issues with X-Plane version XP12.0.9-rc-5 or newer.
--- 01/22/2024 - Jorge Uvo - v0.0.7:	Fixed Parking Brake LED and Anti Ice LED, matching the annunciators.
--- 01/27/2024 - Jorge Uvo - v0.0.8:	Added automatic airplane detection and set configuration.
---					Added ZIBO B738 profile.
---					Added BE9L profile.
---					Added default aircrafts profile.
---					Added Bravo and aircraft detection to the log.txt.
--- 01/27/2024 - Jorge Uvo - v0.0.9:	Fixed issue with LEDs not turning on.
---					Code clean up.
---					Typo fixed.
--- 01/28/2024 - Jorge Uvo - v0.0.10:	Fixed VS above 1000 fps for B738.
+
+-- ***** Change Log *****
+-- 0.0.4:	Modified from the original HoneycombBravoMacHelper v0.0.3 from Joe Milligan.
+--		Modified for ZIBO B738.
+-- 0.0.5:	Merged with the HoneycombBravoZIBOv1.5 from Alfiepops.
+-- 0.0.6:	Fixed compatibility issues with X-Plane version XP12.0.9-rc-5 or newer.
+-- 0.0.7:	Fixed Parking Brake LED and Anti Ice LED, matching the annunciators.
+-- 0.0.8:	Added automatic airplane detection and set configuration.
+--		Added ZIBO B738 profile.
+--		Added BE9L profile.
+--		Added default aircrafts profile.
+--		Added Bravo and aircraft detection to the log.txt.
+-- 0.0.9:	Fixed issue with LEDs not turning on.
+--		Code clean up.
+--		Typos fixed.
+-- 0.0.10:	Fixed VS above 1000 fps for B738.
+-- 1.0:		Initial public version.
 
 local bravo = hid_open(10571, 6401)
 
 function write_log(message)
-	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo Mac v0.0.10]: ' .. message)
+	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo v1.0]: ' .. message)
 end
 
 if bravo == nil then
@@ -148,9 +148,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -372,7 +372,7 @@ function setMode(modeString)
 end
 
 create_command(
-	'HoneycombBravoMac/mode_ias',
+	'HoneycombBravo/mode_ias',
 	'Set autopilot rotary encoder mode to IAS.',
 	'setMode("IAS")',
 	'',
@@ -380,7 +380,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_crs',
+	'HoneycombBravo/mode_crs',
 	'Set autopilot rotary encoder mode to CRS.',
 	'setMode("CRS")',
 	'',
@@ -388,7 +388,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_hdg',
+	'HoneycombBravo/mode_hdg',
 	'Set autopilot rotary encoder mode to HDG.',
 	'setMode("HDG")',
 	'',
@@ -396,7 +396,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_vs',
+	'HoneycombBravo/mode_vs',
 	'Set autopilot rotary encoder mode to VS.',
 	'setMode("VS")',
 	'',
@@ -404,7 +404,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_alt',
+	'HoneycombBravo/mode_alt',
 	'Set autopilot rotary encoder mode to ALT.',
 	'setMode("ALT")',
 	'',
@@ -497,7 +497,7 @@ function change_value(increase)
 end
 
 create_command(
-	'HoneycombBravoMac/increase',
+	'HoneycombBravo/increase',
 	'Increase the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(true)',
 	'',
@@ -505,7 +505,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/decrease',
+	'HoneycombBravo/decrease',
 	'Decrease the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(false)',
 	'',
@@ -591,9 +591,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -814,7 +814,7 @@ function setMode(modeString)
 end
 
 create_command(
-	'HoneycombBravoMac/mode_ias',
+	'HoneycombBravo/mode_ias',
 	'Set autopilot rotary encoder mode to IAS.',
 	'setMode("IAS")',
 	'',
@@ -822,7 +822,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_crs',
+	'HoneycombBravo/mode_crs',
 	'Set autopilot rotary encoder mode to CRS.',
 	'setMode("CRS")',
 	'',
@@ -830,7 +830,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_hdg',
+	'HoneycombBravo/mode_hdg',
 	'Set autopilot rotary encoder mode to HDG.',
 	'setMode("HDG")',
 	'',
@@ -838,7 +838,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_vs',
+	'HoneycombBravo/mode_vs',
 	'Set autopilot rotary encoder mode to VS.',
 	'setMode("VS")',
 	'',
@@ -846,7 +846,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_alt',
+	'HoneycombBravo/mode_alt',
 	'Set autopilot rotary encoder mode to ALT.',
 	'setMode("ALT")',
 	'',
@@ -939,7 +939,7 @@ function change_value(increase)
 end
 
 create_command(
-	'HoneycombBravoMac/increase',
+	'HoneycombBravo/increase',
 	'Increase the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(true)',
 	'',
@@ -947,7 +947,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/decrease',
+	'HoneycombBravo/decrease',
 	'Decrease the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(false)',
 	'',
@@ -976,7 +976,7 @@ function reverser(engine, state)
 end
 
 create_command(
-	'HoneycombBravoMac/thrust_reversers',
+	'HoneycombBravo/thrust_reversers',
 	'Hold all thrust reversers on.',
 	'reversers_all(true)',
 	'',
@@ -985,7 +985,7 @@ create_command(
 
 for i = 1, 8 do
 	create_command(
-		'HoneycombBravoMac/thrust_reverser_'..i,
+		'HoneycombBravo/thrust_reverser_'..i,
 		'Hold thrust reverser #'..i..' on.',
 		'reverser('..i..', true)',
 		'',
@@ -1070,9 +1070,9 @@ local LED_ANC_DOOR =		{4, 4}
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, an error occurred')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo Mac v0.0.10]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo v1.0]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -1293,7 +1293,7 @@ function setMode(modeString)
 end
 
 create_command(
-	'HoneycombBravoMac/mode_ias',
+	'HoneycombBravo/mode_ias',
 	'Set autopilot rotary encoder mode to IAS.',
 	'setMode("IAS")',
 	'',
@@ -1301,7 +1301,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_crs',
+	'HoneycombBravo/mode_crs',
 	'Set autopilot rotary encoder mode to CRS.',
 	'setMode("CRS")',
 	'',
@@ -1309,7 +1309,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_hdg',
+	'HoneycombBravo/mode_hdg',
 	'Set autopilot rotary encoder mode to HDG.',
 	'setMode("HDG")',
 	'',
@@ -1317,7 +1317,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_vs',
+	'HoneycombBravo/mode_vs',
 	'Set autopilot rotary encoder mode to VS.',
 	'setMode("VS")',
 	'',
@@ -1325,7 +1325,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/mode_alt',
+	'HoneycombBravo/mode_alt',
 	'Set autopilot rotary encoder mode to ALT.',
 	'setMode("ALT")',
 	'',
@@ -1418,7 +1418,7 @@ function change_value(increase)
 end
 
 create_command(
-	'HoneycombBravoMac/increase',
+	'HoneycombBravo/increase',
 	'Increase the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(true)',
 	'',
@@ -1426,7 +1426,7 @@ create_command(
 )
 
 create_command(
-	'HoneycombBravoMac/decrease',
+	'HoneycombBravo/decrease',
 	'Decrease the value of the autopilot mode selected with the rotary encoder.',
 	'change_value(false)',
 	'',
@@ -1455,7 +1455,7 @@ function reverser(engine, state)
 end
 
 create_command(
-	'HoneycombBravoMac/thrust_reversers',
+	'HoneycombBravo/thrust_reversers',
 	'Hold all thrust reversers on.',
 	'reversers_all(true)',
 	'',
@@ -1464,7 +1464,7 @@ create_command(
 
 for i = 1, 8 do
 	create_command(
-		'HoneycombBravoMac/thrust_reverser_'..i,
+		'HoneycombBravo/thrust_reverser_'..i,
 		'Hold thrust reverser #'..i..' on.',
 		'reverser('..i..', true)',
 		'',
