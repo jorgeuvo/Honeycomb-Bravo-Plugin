@@ -40,10 +40,6 @@ if PLANE_ICAO == "B738" then
 	write_log('INFO Running B738 profile.')
 elseif PLANE_ICAO == "BE9L" then
 	write_log('INFO Running BE9L profile.')
-elseif PLANE_ICAO == "C172" then
-	write_log('INFO Running C172 profile.')
-elseif PLANE_ICAO == "SR22" then
-	write_log('INFO Running SR22 configuration.')
 else
 	write_log('INFO Running XP default aircraft profile.')
 end
