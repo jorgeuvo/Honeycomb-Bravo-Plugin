@@ -1571,6 +1571,7 @@ local LED_ANC_DOOR =		{4, 4}
 
 	-- Landing gear LEDs
 	local gear = dataref_table('sim/flightmodel2/gear/deploy_ratio')
+	local retractable_gear = dataref_table('sim/aircraft/gear/acf_gear_retract')
 
 	-- Annunciator panel - top row
 	local master_warn = dataref_table('sim/cockpit2/annunciators/master_warning')
@@ -1635,18 +1636,22 @@ local LED_ANC_DOOR =		{4, 4}
 			for i = 1, 3 do
 				gear_leds[i] = {nil, nil} -- green, red
 
-				if gear[i - 1] == 0 then
-					-- Gear stowed
-					gear_leds[i][1] = false
-					gear_leds[i][2] = false
-				elseif gear[i - 1] == 1 then
-					-- Gear deployed
-					gear_leds[i][1] = true
-					gear_leds[i][2] = false
+				if retractable_gear[0] == 0 then
+					-- No retractable landing gear
 				else
-					-- Gear moving
-					gear_leds[i][1] = false
-					gear_leds[i][2] = true
+					if gear[i - 1] == 0 then
+						-- Gear stowed
+						gear_leds[i][1] = false
+						gear_leds[i][2] = false
+					elseif gear[i - 1] == 1 then
+						-- Gear deployed
+						gear_leds[i][1] = true
+						gear_leds[i][2] = false
+					else
+						-- Gear moving
+						gear_leds[i][1] = false
+						gear_leds[i][2] = true
+					end
 				end
 			end
 
