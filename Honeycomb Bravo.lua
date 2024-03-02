@@ -1,7 +1,7 @@
 -- Honeycomb Bravo Mac - a Honeycomb Bravo Apple silicon driver
 -- Based on HoneycombBravoHelper for Linux https://gitlab.com/honeycomb-xplane-linux
 -- Author:		Daniel Peukert
--- Version:		0.0.8
+-- Version:		0.0.9
 -- License:		GNU GPLv3
 -- Modified for MacOS by Joe Milligan
 -- 12/24/2023 - Jorge Uvo - v0.0.4:	Modified from the original HoneycombBravoMacHelper v0.0.3.
@@ -9,16 +9,19 @@
 -- 01/21/2024 - Jorge Uvo - v0.0.5:	Merged with the HoneycombBravoMacZIBOv1.5 from Alfiepops.
 -- 01/21/2024 - Jorge Uvo - v0.0.6:	Fixed compatibility issues with X-Plane version XP12.0.9-rc-5 or newer.
 -- 01/22/2024 - Jorge Uvo - v0.0.7:	Fixed Parking Brake LED and Anti Ice LED, matching the annunciators.
--- 01/27/2024 - Jorge Uvo - v0.0.8:	Added automatic airplane detection and set configuration
+-- 01/27/2024 - Jorge Uvo - v0.0.8:	Added automatic airplane detection and set configuration.
 --					Added ZIBO B738 profile.
 --					Added BE9L profile.
 --					Added default aircrafts profile.
 --					Added Bravo and aircraft detection to the log.txt.
+-- 01/27/2024 - Jorge Uvo - v0.0.9:	Fixed issue with LEDs not turning on.
+--					Code clean up.
+--					Typo fixed.
 
 local bravo = hid_open(10571, 6401)
 
 function write_log(message)
-	logMsg(os.date('%H:%M:%S ') .. '[FWL Honeycomb Bravo Mac Script v0.0.8]: ' .. message)
+	logMsg(os.date('%H:%M:%S ') .. '[Honeycomb Bravo Mac v0.0.9]: ' .. message)
 end
 
 if bravo == nil then
@@ -100,11 +103,7 @@ local LED_ANC_VOLTS =		{4, 3}
 local LED_ANC_DOOR =		{4, 4}
 
 -- Support variables & functions for sending LED data via HID
-local bravo = hid_open(10571, 6401)
 
-if bravo == nil then
-	logMsg('HoneycombBravoMac | Error: Unable to connect to the Honeycomb Bravo throttle quadrant')
-else
 	local buffer = {}
 
 	local master_state = false
@@ -148,9 +147,9 @@ else
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, an error occured')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -361,7 +360,6 @@ else
 	end
 
 	do_on_exit('exit_handler()')
-end
 
 -- Commands for switching autopilot modes used by the rotary encoder.
 -- Cannot know the initial state of the right hand rotary until it is moved, so assume IAS
@@ -552,11 +550,7 @@ local LED_ANC_VOLTS =		{4, 3}
 local LED_ANC_DOOR =		{4, 4}
 
 -- Support variables & functions for sending LED data via HID
-local bravo = hid_open(10571, 6401)
 
-if bravo == nil then
-	logMsg('HoneycombBravoMac | Error: Unable to connect to the Honeycomb Bravo throttle quadrant')
-else
 	local buffer = {}
 
 	local master_state = false
@@ -600,9 +594,9 @@ else
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, an error occured')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -814,7 +808,6 @@ else
 	end
 
 	do_on_exit('exit_handler()')
-end
 
 -- Register commands for switching autopilot modes used by the rotary encoder
 local mode = 'IAS'
@@ -1040,11 +1033,7 @@ local LED_ANC_VOLTS =		{4, 3}
 local LED_ANC_DOOR =		{4, 4}
 
 -- Support variables & functions for sending LED data via HID
-local bravo = hid_open(10571, 6401)
 
-if bravo == nil then
-	logMsg('HoneycombBravoMac | Error: Unable to connect to the Honeycomb Bravo throttle quadrant')
-else
 	local buffer = {}
 
 	local master_state = false
@@ -1088,9 +1077,9 @@ else
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, an error occured')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('HoneycombBravoMac | Error: Feature report write failed, only '..bytes_written..' bytes written')
+			logMsg('[Honeycomb Bravo Mac v0.0.9]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
@@ -1302,7 +1291,6 @@ else
 	end
 
 	do_on_exit('exit_handler()')
-end
 
 -- Register commands for switching autopilot modes used by the rotary encoder
 local mode = 'IAS'
