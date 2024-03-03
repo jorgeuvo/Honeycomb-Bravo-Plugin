@@ -1566,6 +1566,10 @@ local LED_ANC_DOOR =		{4, 4}
 	-- Change LEDs when their underlying dataref changes
 	-- Bus voltage as a master LED switch
 	local bus_voltage = dataref_table('sim/cockpit2/electrical/bus_volts')
+	if PLANE_ICAO == "C750" then
+		-- On the C750 bus_volts is only on when the Standby Power is on, but the lights and indicators in the sim are on before that
+		bus_voltage = dataref_table('laminar/CitX/APU/DC_volts')
+	end
 
     -- Datarefs configuration for Default Aircrafts.
 
@@ -1651,7 +1655,13 @@ local LED_ANC_DOOR =		{4, 4}
 			set_led(LED_FCU_VS, get_ap_state(vs))
 
 			-- IAS
-			set_led(LED_FCU_IAS, get_ap_state(ias))
+			if bitwise.band(autopilot_state[0], 8) > 0 then
+				-- Speed-by-pitch Engage AKA Flight Level Change
+				-- See "Aliasing of Flight-Level Change With Speed Change" on https://developer.x-plane.com/article/accessing-the-x-plane-autopilot-from-datarefs/
+				set_led(LED_FCU_IAS, true)
+			else
+				set_led(LED_FCU_IAS, get_ap_state(ias))
+			end
 
 			-- AUTOPILOT
 			set_led(LED_FCU_AP, int_to_bool(ap[0]))
