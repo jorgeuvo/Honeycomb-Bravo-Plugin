@@ -1447,7 +1447,12 @@ function change_value(increase)
 	elseif mode == 'VS' then
 		vs[0] = vs[0] + (50 * sign * factor)
 	elseif mode == 'ALT' then
-		altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
+		if PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
+			-- 20ft at a time and no acceleration factor to match simulated flight control
+			altitude[0] = math.max(0, math.floor((altitude[0] / 20) + sign) * 20)
+		else
+			altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
+		end
 	end
 	last_mode = mode
 	last_time = os.clock()
