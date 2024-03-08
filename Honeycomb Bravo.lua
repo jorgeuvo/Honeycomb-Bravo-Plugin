@@ -1579,6 +1579,7 @@ local LED_ANC_DOOR =		{4, 4}
 	local ias = dataref_table('sim/cockpit2/autopilot/autothrottle_on')
 
 	local ap = dataref_table('sim/cockpit2/autopilot/servos_on')
+	local autopilot_state = dataref_table("sim/cockpit/autopilot/autopilot_state") -- see https://developer.x-plane.com/article/accessing-the-x-plane-autopilot-from-datarefs/
 
 	-- Landing gear LEDs
 	local gear = dataref_table('sim/flightmodel2/gear/deploy_ratio')
@@ -1609,11 +1610,26 @@ local LED_ANC_DOOR =		{4, 4}
 		if bus_voltage[0] > 0 then
 			master_state = true
 
-			-- HDG
-			set_led(LED_FCU_HDG, get_ap_state(hdg))
+			-- HDG & NAV
+			if bitwise.band(autopilot_state[0], 2) > 0 then
+				-- Heading Select Engage
+				set_led(LED_FCU_HDG, true)
+				set_led(LED_FCU_NAV, false)
+			elseif bitwise.band(autopilot_state[0], 512) > 0 or bitwise.band(autopilot_state[0], 524288) > 0 then
+				-- Nav Engaged or GPSS Engaged
+				set_led(LED_FCU_HDG, false)
+				set_led(LED_FCU_NAV, true)
+			elseif PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
+				-- Aircraft known to use autopilot_state
+				set_led(LED_FCU_HDG, false)
+				set_led(LED_FCU_NAV, false)
+			else
+				-- HDG
+				set_led(LED_FCU_HDG, get_ap_state(hdg))
 
-			-- NAV
-			set_led(LED_FCU_NAV, get_ap_state(nav))
+				-- NAV
+				set_led(LED_FCU_NAV, get_ap_state(nav))
+			end
 
 			-- APR
 			set_led(LED_FCU_APR, get_ap_state(apr))
