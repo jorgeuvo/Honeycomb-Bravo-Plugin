@@ -67,36 +67,37 @@ function array_has_true(array)
 	return false
 end
 
--- ****************************** CONFIGURATION FOR DEFAULT AIRCRAFTS ******************************
--- LED definitions for Default Aircrafts.
-local LED_FCU_HDG =			{1, 1}
-local LED_FCU_NAV =			{1, 2}
-local LED_FCU_APR =			{1, 3}
-local LED_FCU_REV =			{1, 4}
-local LED_FCU_ALT =			{1, 5}
-local LED_FCU_VS =			{1, 6}
-local LED_FCU_IAS =			{1, 7}
-local LED_FCU_AP =			{1, 8}
-local LED_LDG_L_GREEN =		{2, 1}
-local LED_LDG_L_RED =		{2, 2}
-local LED_LDG_N_GREEN =		{2, 3}
-local LED_LDG_N_RED =		{2, 4}
-local LED_LDG_R_GREEN =		{2, 5}
-local LED_LDG_R_RED =		{2, 6}
-local LED_ANC_MSTR_WARNG =	{2, 7}
-local LED_ANC_ENG_FIRE =	{2, 8}
-local LED_ANC_OIL =			{3, 1}
-local LED_ANC_FUEL =		{3, 2}
-local LED_ANC_ANTI_ICE =	{3, 3}
-local LED_ANC_STARTER =		{3, 4}
-local LED_ANC_APU =			{3, 5}
-local LED_ANC_MSTR_CTN =	{3, 6}
-local LED_ANC_VACUUM =		{3, 7}
-local LED_ANC_HYD =			{3, 8}
-local LED_ANC_AUX_FUEL =	{4, 1}
-local LED_ANC_PRK_BRK =		{4, 2}
-local LED_ANC_VOLTS =		{4, 3}
-local LED_ANC_DOOR =		{4, 4}
+-- LED definitions
+local LED = {
+	FCU_HDG =			{1, 1},
+	FCU_NAV =			{1, 2},
+	FCU_APR =			{1, 3},
+	FCU_REV =			{1, 4},
+	FCU_ALT =			{1, 5},
+	FCU_VS =			{1, 6},
+	FCU_IAS =			{1, 7},
+	FCU_AP =			{1, 8},
+	LDG_L_GREEN =		{2, 1},
+	LDG_L_RED =			{2, 2},
+	LDG_N_GREEN =		{2, 3},
+	LDG_N_RED =			{2, 4},
+	LDG_R_GREEN =		{2, 5},
+	LDG_R_RED =			{2, 6},
+	ANC_MSTR_WARNG =	{2, 7},
+	ANC_ENG_FIRE =		{2, 8},
+	ANC_OIL =			{3, 1},
+	ANC_FUEL =			{3, 2},
+	ANC_ANTI_ICE =		{3, 3},
+	ANC_STARTER =		{3, 4},
+	ANC_APU =			{3, 5},
+	ANC_MSTR_CTN =		{3, 6},
+	ANC_VACUUM =		{3, 7},
+	ANC_HYD =			{3, 8},
+	ANC_AUX_FUEL =		{4, 1},
+	ANC_PRK_BRK =		{4, 2},
+	ANC_VOLTS =			{4, 3},
+	ANC_DOOR =			{4, 4},
+}
 
 -- Support variables & functions for sending LED data via HID
 
@@ -235,29 +236,29 @@ local LED_ANC_DOOR =		{4, 4}
 			-- HDG & NAV
 			if bitwise.band(autopilot_state[0], 2) > 0 then
 				-- Heading Select Engage
-				set_led(LED_FCU_HDG, true)
-				set_led(LED_FCU_NAV, false)
+				set_led(LED.FCU_HDG, true)
+				set_led(LED.FCU_NAV, false)
 			elseif bitwise.band(autopilot_state[0], 512) > 0 or bitwise.band(autopilot_state[0], 524288) > 0 then
 				-- Nav Engaged or GPSS Engaged
-				set_led(LED_FCU_HDG, false)
-				set_led(LED_FCU_NAV, true)
+				set_led(LED.FCU_HDG, false)
+				set_led(LED.FCU_NAV, true)
 			elseif PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
 				-- Aircraft known to use autopilot_state
-				set_led(LED_FCU_HDG, false)
-				set_led(LED_FCU_NAV, false)
+				set_led(LED.FCU_HDG, false)
+				set_led(LED.FCU_NAV, false)
 			else
 				-- HDG
-				set_led(LED_FCU_HDG, get_ap_state(hdg))
+				set_led(LED.FCU_HDG, get_ap_state(hdg))
 
 				-- NAV
-				set_led(LED_FCU_NAV, get_ap_state(nav))
+				set_led(LED.FCU_NAV, get_ap_state(nav))
 			end
 
 			-- APR
-			set_led(LED_FCU_APR, get_ap_state(apr))
+			set_led(LED.FCU_APR, get_ap_state(apr))
 
 			-- REV
-			set_led(LED_FCU_REV, get_ap_state(rev))
+			set_led(LED.FCU_REV, get_ap_state(rev))
 
 			-- ALT
 			local alt_bool
@@ -268,22 +269,22 @@ local LED_ANC_DOOR =		{4, 4}
 				alt_bool = false
 			end
 
-			set_led(LED_FCU_ALT, alt_bool)
+			set_led(LED.FCU_ALT, alt_bool)
 
 			-- VS
-			set_led(LED_FCU_VS, get_ap_state(vs))
+			set_led(LED.FCU_VS, get_ap_state(vs))
 
 			-- IAS
 			if bitwise.band(autopilot_state[0], 8) > 0 then
 				-- Speed-by-pitch Engage AKA Flight Level Change
 				-- See "Aliasing of Flight-Level Change With Speed Change" on https://developer.x-plane.com/article/accessing-the-x-plane-autopilot-from-datarefs/
-				set_led(LED_FCU_IAS, true)
+				set_led(LED.FCU_IAS, true)
 			else
-				set_led(LED_FCU_IAS, get_ap_state(ias))
+				set_led(LED.FCU_IAS, get_ap_state(ias))
 			end
 
 			-- AUTOPILOT
-			set_led(LED_FCU_AP, int_to_bool(ap[0]))
+			set_led(LED.FCU_AP, int_to_bool(ap[0]))
 
 			-- Landing gear
 			local gear_leds = {}
@@ -310,46 +311,46 @@ local LED_ANC_DOOR =		{4, 4}
 				end
 			end
 
-			set_led(LED_LDG_N_GREEN, gear_leds[1][1])
-			set_led(LED_LDG_N_RED, gear_leds[1][2])
-			set_led(LED_LDG_L_GREEN, gear_leds[2][1])
-			set_led(LED_LDG_L_RED, gear_leds[2][2])
-			set_led(LED_LDG_R_GREEN, gear_leds[3][1])
-			set_led(LED_LDG_R_RED, gear_leds[3][2])
+			set_led(LED.LDG_N_GREEN, gear_leds[1][1])
+			set_led(LED.LDG_N_RED, gear_leds[1][2])
+			set_led(LED.LDG_L_GREEN, gear_leds[2][1])
+			set_led(LED.LDG_L_RED, gear_leds[2][2])
+			set_led(LED.LDG_R_GREEN, gear_leds[3][1])
+			set_led(LED.LDG_R_RED, gear_leds[3][2])
 
 			-- MASTER WARNING
-			set_led(LED_ANC_MSTR_WARNG, int_to_bool(master_warn[0]))
+			set_led(LED.ANC_MSTR_WARNG, int_to_bool(master_warn[0]))
 
 			-- ENGINE FIRE
-			set_led(LED_ANC_ENG_FIRE, array_has_true(fire))
+			set_led(LED.ANC_ENG_FIRE, array_has_true(fire))
 
 			-- LOW OIL PRESSURE
-			set_led(LED_ANC_OIL, array_has_true(oil_low_p))
+			set_led(LED.ANC_OIL, array_has_true(oil_low_p))
 
 			-- LOW FUEL PRESSURE
-			set_led(LED_ANC_FUEL, array_has_true(fuel_low_p))
+			set_led(LED.ANC_FUEL, array_has_true(fuel_low_p))
 
 			-- ANTI ICE
-			set_led(LED_ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
+			set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
 
 			-- STARTER ENGAGED
-			set_led(LED_ANC_STARTER, array_has_true(starter))
+			set_led(LED.ANC_STARTER, array_has_true(starter))
 
 			-- APU
-			set_led(LED_ANC_APU, int_to_bool(apu[0]))
+			set_led(LED.ANC_APU, int_to_bool(apu[0]))
 
 			-- MASTER CAUTION
-			set_led(LED_ANC_MSTR_CTN, int_to_bool(master_caution[0]))
+			set_led(LED.ANC_MSTR_CTN, int_to_bool(master_caution[0]))
 
 			-- VACUUM
-			set_led(LED_ANC_VACUUM, int_to_bool(vacuum[0]))
+			set_led(LED.ANC_VACUUM, int_to_bool(vacuum[0]))
 
 			-- LOW HYD PRESSURE
 			if PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
 				-- For planes that don't have a hydraulic pressure annunciator
-				set_led(LED_ANC_HYD, false)
+				set_led(LED.ANC_HYD, false)
 			else
-				set_led(LED_ANC_HYD, int_to_bool(hydro_low_p[0]))
+				set_led(LED.ANC_HYD, int_to_bool(hydro_low_p[0]))
 			end
 
 			-- AUX FUEL PUMP
@@ -361,7 +362,7 @@ local LED_ANC_DOOR =		{4, 4}
 				aux_fuel_pump_bool = false
 			end
 
-			set_led(LED_ANC_AUX_FUEL, aux_fuel_pump_bool)
+			set_led(LED.ANC_AUX_FUEL, aux_fuel_pump_bool)
 
 			-- PARKING BRAKE
 			local parking_brake_bool
@@ -372,10 +373,10 @@ local LED_ANC_DOOR =		{4, 4}
 				parking_brake_bool = false
 			end
 
-			set_led(LED_ANC_PRK_BRK, parking_brake_bool)
+			set_led(LED.ANC_PRK_BRK, parking_brake_bool)
 
 			-- LOW VOLTS
-			set_led(LED_ANC_VOLTS, int_to_bool(volt_low[0]))
+			set_led(LED.ANC_VOLTS, int_to_bool(volt_low[0]))
 
 			-- DOOR
 			local door_bool = false
@@ -397,7 +398,7 @@ local LED_ANC_DOOR =		{4, 4}
 				door_bool = int_to_bool(cabin_door[0])
 			end
 
-			set_led(LED_ANC_DOOR, door_bool)
+			set_led(LED.ANC_DOOR, door_bool)
 		elseif master_state == true then
 			-- No bus voltage, disable all LEDs
 			master_state = false
