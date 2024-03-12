@@ -36,7 +36,50 @@ else
 	write_log('INFO Honeycomb Bravo Throttle Quadrant detected.')
 end
 
-write_log('INFO Aircraft identified as ' .. PLANE_ICAO)
+write_log('INFO Aircraft identified as ' .. PLANE_ICAO .. ' with filename ' .. AIRCRAFT_FILENAME)
+
+-- Plugin Profile: a profile represents using aircraft-specific datarefs
+local PROFILE = "default"
+
+-- Switches for specific plugin behavior that transcends profiles
+local SHOW_ANC_HYD = true
+local ONLY_USE_AUTOPILOT_STATE = false
+
+if PLANE_ICAO == "B738" then
+	-- Laminar B738 / Zibo B738
+	PROFILE = "B738"
+elseif PLANE_ICAO == "C750" then
+	-- Laminar Citation X
+	PROFILE = "laminar/CitX"
+elseif PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
+	-- Laminar C172
+	PROFILE = "laminar/C172"
+end
+
+if PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
+	SHOW_ANC_HYD = false
+	ONLY_USE_AUTOPILOT_STATE = true -- as the normal hdg and nav datarefs indicate hdg when they shouldn't
+end
+
+-- Disable the hydraulics annunciator on SEL aircraft, see https://forums.x-plane.org/index.php?/files/file/89635-honeycomb-bravo-plugin/&do=findComment&comment=396048
+if
+PLANE_ICAO == "C172" or 
+PLANE_ICAO == "SR22" or 
+PLANE_ICAO == "SR20" or
+PLANE_ICAO == "S22T" or
+PLANE_ICAO == "SR22T" or
+PLANE_ICAO == "P28A" or
+PLANE_ICAO == "C208" or
+PLANE_ICAO == "K100" or
+PLANE_ICAO == "KODI" or
+PLANE_ICAO == "DA40" or
+PLANE_ICAO == "RV10" or
+false then
+	SHOW_ANC_HYD = false
+end
+
+write_log('INFO Using aircraft profile: ' .. PROFILE)
+
 
 local bitwise = require 'bit'
 
@@ -160,10 +203,10 @@ local LED = {
 	-- Change LEDs when their underlying dataref changes
 	-- Bus voltage as a master LED switch
 	local bus_voltage = dataref_table('sim/cockpit2/electrical/bus_volts')
-	if PLANE_ICAO == "C750" then
+	if PROFILE == "laminar/CitX" then
 		-- On the C750 bus_volts is only on when the Standby Power is on, but the lights and indicators in the sim are on before that
 		bus_voltage = dataref_table('laminar/CitX/APU/DC_volts')
-	elseif PLANE_ICAO == "B738" then
+	elseif PROFILE == "B738" then
 		bus_voltage = dataref_table('laminar/B738/electric/batbus_status')
 	end
 
@@ -180,7 +223,7 @@ local LED = {
 
 	local ap = dataref_table('sim/cockpit2/autopilot/servos_on')
 	local autopilot_state = dataref_table("sim/cockpit/autopilot/autopilot_state") -- see https://developer.x-plane.com/article/accessing-the-x-plane-autopilot-from-datarefs/
-	if PLANE_ICAO == "B738" then
+	if PROFILE == "B738" then
 		hdg = dataref_table('laminar/B738/autopilot/hdg_sel_status')
 		nav = dataref_table('laminar/B738/autopilot/lnav_status')
 		apr = dataref_table('laminar/B738/autopilot/app_status')
@@ -204,7 +247,7 @@ local LED = {
 	local anti_ice = dataref_table('sim/cockpit2/annunciators/pitot_heat')
 	local starter = dataref_table('sim/cockpit2/engine/actuators/starter_hit')
 	local apu = dataref_table('sim/cockpit2/electrical/APU_running')
-	if PLANE_ICAO == "B738" then
+	if PROFILE == "B738" then
 		fire = dataref_table('laminar/B738/annunciator/six_pack_fire')
 		fuel_low_p = dataref_table('laminar/B738/annunciator/six_pack_fuel')
 		anti_ice = dataref_table('laminar/B738/annunciator/six_pack_ice')
@@ -221,7 +264,7 @@ local LED = {
 	local canopy = dataref_table('sim/flightmodel2/misc/canopy_open_ratio')
 	local doors = dataref_table('sim/flightmodel2/misc/door_open_ratio')
 	local cabin_door = dataref_table('sim/cockpit2/annunciators/cabin_door_open')
-	if PLANE_ICAO == "B738" then
+	if PROFILE == "B738" then
 		master_caution = dataref_table('laminar/B738/annunciator/master_caution_light')
 		hydro_low_p = dataref_table('laminar/B738/annunciator/six_pack_hyd')
 		parking_brake = dataref_table('laminar/B738/annunciator/parking_brake')
@@ -242,7 +285,7 @@ local LED = {
 				-- Nav Engaged or GPSS Engaged
 				set_led(LED.FCU_HDG, false)
 				set_led(LED.FCU_NAV, true)
-			elseif PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
+			elseif ONLY_USE_AUTOPILOT_STATE then
 				-- Aircraft known to use autopilot_state
 				set_led(LED.FCU_HDG, false)
 				set_led(LED.FCU_NAV, false)
@@ -346,11 +389,11 @@ local LED = {
 			set_led(LED.ANC_VACUUM, int_to_bool(vacuum[0]))
 
 			-- LOW HYD PRESSURE
-			if PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
+			if SHOW_ANC_HYD then
+				set_led(LED.ANC_HYD, int_to_bool(hydro_low_p[0]))
+			else
 				-- For planes that don't have a hydraulic pressure annunciator
 				set_led(LED.ANC_HYD, false)
-			else
-				set_led(LED.ANC_HYD, int_to_bool(hydro_low_p[0]))
 			end
 
 			-- AUX FUEL PUMP
@@ -475,19 +518,6 @@ local heading = dataref_table('sim/cockpit2/autopilot/heading_dial_deg_mag_pilot
 local vs = dataref_table('sim/cockpit2/autopilot/vvi_dial_fpm')
 local altitude = dataref_table('sim/cockpit2/autopilot/altitude_dial_ft')
 
-local vs_multiple = 50
-
-if PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
-	altitude = dataref_table('sim/cockpit/autopilot/current_altitude')
-elseif PLANE_ICAO == "B738" then
-	airspeed_is_mach = dataref_table('laminar/B738/autopilot/mcp_speed_dial_kts_mach')
-	airspeed = dataref_table('laminar/B738/autopilot/mcp_speed_dial_kts')
-	course = dataref_table('laminar/B738/autopilot/course_pilot')
-	heading = dataref_table('laminar/B738/autopilot/mcp_hdg_dial')
-	altitude = dataref_table('laminar/B738/autopilot/mcp_alt_dial')
-	vs_multiple = 100
-end
-
 -- Acceleration parameters
 local last_mode = mode
 local last_time = os.clock() - 10 -- arbitrarily in the past
@@ -500,6 +530,24 @@ local fast_crs = 5
 local fast_hdg = 5
 local fast_vs = 1
 local fast_alt = 10
+
+local vs_multiple = 50
+local alt_multiple = 100
+
+if PROFILE == "laminar/C172" then
+	altitude = dataref_table('sim/cockpit/autopilot/current_altitude')
+
+	-- 20ft at a time and no acceleration factor to match simulated flight control
+	alt_multiple = 20
+	fast_alt = 1
+elseif PROFILE == "B738" then
+	airspeed_is_mach = dataref_table('laminar/B738/autopilot/mcp_speed_dial_kts_mach')
+	airspeed = dataref_table('laminar/B738/autopilot/mcp_speed_dial_kts')
+	course = dataref_table('laminar/B738/autopilot/course_pilot')
+	heading = dataref_table('laminar/B738/autopilot/mcp_hdg_dial')
+	altitude = dataref_table('laminar/B738/autopilot/mcp_alt_dial')
+	vs_multiple = 100
+end
 
 function change_value(increase)
 	local sign
@@ -559,12 +607,7 @@ function change_value(increase)
 	elseif mode == 'VS' then
 		vs[0] = math.floor((vs[0] / vs_multiple) + (sign * factor)) * vs_multiple
 	elseif mode == 'ALT' then
-		if PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
-			-- 20ft at a time and no acceleration factor to match simulated flight control
-			altitude[0] = math.max(0, math.floor((altitude[0] / 20) + sign) * 20)
-		else
-			altitude[0] = math.max(0, math.floor((altitude[0] / 100) + (sign * factor)) * 100)
-		end
+		altitude[0] = math.max(0, math.floor((altitude[0] / alt_multiple) + (sign * factor)) * alt_multiple)
 	end
 	last_mode = mode
 	last_time = os.clock()
