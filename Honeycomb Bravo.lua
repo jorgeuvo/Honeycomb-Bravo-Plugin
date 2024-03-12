@@ -144,9 +144,9 @@ local LED = {
 		local bytes_written = hid_send_filled_feature_report(bravo, 0, 65, data[1], data[2], data[3], data[4]) -- 65 = 1 byte (report ID) + 64 bytes (data)
 
 		if bytes_written == -1 then
-			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, an error occurred')
+			write_log('ERROR Feature report write failed, an error occurred')
 		elseif bytes_written < 65 then
-			logMsg('[Honeycomb Bravo v1.1.1]: ERROR Feature report write failed, only '..bytes_written..' bytes written')
+			write_log('ERROR Feature report write failed, only '..bytes_written..' bytes written')
 		else
 			buffer_modified = false
 		end
