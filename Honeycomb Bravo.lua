@@ -61,6 +61,23 @@ if PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
 	ONLY_USE_AUTOPILOT_STATE = true -- as the normal hdg and nav datarefs indicate hdg when they shouldn't
 end
 
+-- Disable the hydraulics annunciator on SEL aircraft, see https://forums.x-plane.org/index.php?/files/file/89635-honeycomb-bravo-plugin/&do=findComment&comment=396048
+if
+PLANE_ICAO == "C172" or 
+PLANE_ICAO == "SR22" or 
+PLANE_ICAO == "SR20" or
+PLANE_ICAO == "S22T" or
+PLANE_ICAO == "SR22T" or
+PLANE_ICAO == "P28A" or
+PLANE_ICAO == "C208" or
+PLANE_ICAO == "K100" or
+PLANE_ICAO == "KODI" or
+PLANE_ICAO == "DA40" or
+PLANE_ICAO == "RV10" or
+false then
+	SHOW_ANC_HYD = false
+end
+
 write_log('INFO Using aircraft profile: ' .. PROFILE)
 
 
