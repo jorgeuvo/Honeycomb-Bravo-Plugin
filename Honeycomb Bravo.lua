@@ -51,6 +51,12 @@ if PLANE_ICAO == "B738" then
 elseif PLANE_ICAO == "C750" then
 	-- Laminar Citation X
 	PROFILE = "laminar/CitX"
+elseif PLANE_ICAO == "B752" or PLANE_ICAO == "B753" then
+	-- FlightFactor 757
+	PROFILE = "FF/757"
+elseif PLANE_ICAO == "B763" or PLANE_ICAO == "B764" then
+	-- FlightFactor 767
+	PROFILE = "FF/767"
 elseif PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
 	-- Laminar C172
 	PROFILE = "laminar/C172"
@@ -245,12 +251,18 @@ local LED = {
 	local oil_low_p = dataref_table('sim/cockpit2/annunciators/oil_pressure_low')
 	local fuel_low_p = dataref_table('sim/cockpit2/annunciators/fuel_pressure_low')
 	local anti_ice = dataref_table('sim/cockpit2/annunciators/pitot_heat')
+	local anti_ice_flip = false
 	local starter = dataref_table('sim/cockpit2/engine/actuators/starter_hit')
 	local apu = dataref_table('sim/cockpit2/electrical/APU_running')
 	if PROFILE == "B738" then
 		fire = dataref_table('laminar/B738/annunciator/six_pack_fire')
 		fuel_low_p = dataref_table('laminar/B738/annunciator/six_pack_fuel')
 		anti_ice = dataref_table('laminar/B738/annunciator/six_pack_ice')
+	elseif PROFILE == "FF/757" or PROFILE == "FF/767" then
+		master_warn = dataref_table('inst/loopwarning')
+		fire = dataref_table('sim/cockpit/warnings/annunciators/engine_fires')
+		anti_ice = dataref_table('sim/cockpit2/ice/ice_window_heat_on')
+		anti_ice_flip = true
 	end
 
 	-- Annunciator panel - bottom row
@@ -263,6 +275,7 @@ local LED = {
 	local volt_low = dataref_table('sim/cockpit2/annunciators/low_voltage')
 	local canopy = dataref_table('sim/flightmodel2/misc/canopy_open_ratio')
 	local doors = dataref_table('sim/flightmodel2/misc/door_open_ratio')
+	local doors_array = {}
 	local cabin_door = dataref_table('sim/cockpit2/annunciators/cabin_door_open')
 	if PROFILE == "B738" then
 		master_caution = dataref_table('laminar/B738/annunciator/master_caution_light')
@@ -270,6 +283,24 @@ local LED = {
 		parking_brake = dataref_table('laminar/B738/annunciator/parking_brake')
 		doors = dataref_table('laminar/B738/annunciator/six_pack_doors')
 		cabin_door = dataref_table('laminar/B738/toggle_switch/flt_dk_door')
+	elseif PROFILE == "FF/757" then
+		doors_array[0] = dataref_table('anim/door/FL')
+		doors_array[1] = dataref_table('anim/door/FR')
+		doors_array[2] = dataref_table('anim/door/ML')
+		doors_array[3] = dataref_table('anim/door/MR')
+		doors_array[4] = dataref_table('anim/door/BL')
+		doors_array[5] = dataref_table('anim/door/BR')
+		doors_array[6] = dataref_table('1-sim/anim/doors/cargoBack/anim')
+		doors_array[7] = dataref_table('1-sim/anim/doors/cargoSide/anim')
+		doors_array[8] = dataref_table('anim/doorC') -- 757 freighter cargo door
+	elseif PROFILE == "FF/767" then
+		doors_array[0] = dataref_table('1-sim/anim/doors/FL/anim')
+		doors_array[1] = dataref_table('1-sim/anim/doors/FR/anim')
+		doors_array[2] = dataref_table('1-sim/anim/doors/BL/anim')
+		doors_array[3] = dataref_table('1-sim/anim/doors/BR/anim')
+		doors_array[4] = dataref_table('1-sim/anim/doors/cargoFront/anim')
+		doors_array[5] = dataref_table('1-sim/anim/doors/cargoBack/anim')
+		doors_array[6] = dataref_table('1-sim/anim/doors/cargoSide/anim')
 	end
 
 	function handle_led_changes()
@@ -374,7 +405,11 @@ local LED = {
 			set_led(LED.ANC_FUEL, array_has_true(fuel_low_p))
 
 			-- ANTI ICE
-			set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
+			if not anti_ice_flip then
+				set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
+			else
+				set_led(LED.ANC_ANTI_ICE, not int_to_bool(anti_ice[0]))
+			end
 
 			-- STARTER ENGAGED
 			set_led(LED.ANC_STARTER, array_has_true(starter))
@@ -431,6 +466,15 @@ local LED = {
 			if door_bool == false then
 				for i = 0, 9 do
 					if doors[i] > 0.01 then
+						door_bool = true
+						break
+					end
+				end
+			end
+
+			if door_bool == false then
+				for i = 0, 9 do
+					if doors_array[i] ~= nil and doors_array[i][0] > 0.01 then
 						door_bool = true
 						break
 					end
@@ -546,6 +590,13 @@ elseif PROFILE == "B738" then
 	course = dataref_table('laminar/B738/autopilot/course_pilot')
 	heading = dataref_table('laminar/B738/autopilot/mcp_hdg_dial')
 	altitude = dataref_table('laminar/B738/autopilot/mcp_alt_dial')
+	vs_multiple = 100
+elseif PROFILE == "FF/757" or PROFILE == "FF/767" then
+	airspeed = dataref_table('757Avionics/ap/spd_act')
+	course = dataref_table('sim/cockpit/radios/nav2_obs_degm') -- nav2 targets ILS rather than VOR on nav1
+	heading = dataref_table('757Avionics/ap/hdg_act')
+	vs = dataref_table('757Avionics/ap/vs_act')
+	altitude = dataref_table('757Avionics/ap/alt_act')
 	vs_multiple = 100
 end
 
