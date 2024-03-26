@@ -121,8 +121,8 @@ function get_ap_state(array)
 end
 
 function array_has_true(array)
-	for i = 0, #array do
-		if array[i] and array[i] == 1 then
+	for _, value in ipairs(array) do
+		if value == 1 then
 			return true
 		end
 	end
@@ -130,9 +130,13 @@ function array_has_true(array)
 	return false
 end
 
-function array_has_positives(array)
-	for i = 0, #array do
-		if array[i] and array[i] > 0.01 then
+function array_has_positives(array, max_lenght)
+	for i = 0, max_lenght do
+		if not array[i] then
+			write_log('ERROR array_has_positives: array[' .. i .. '] is nil')
+			break
+		end
+		if array[i] > 0.01 then
 			return true
 		end
 	end
@@ -572,9 +576,9 @@ function handle_led_changes()
 
 		-- ANTI ICE
 		if not anti_ice_flip then
-			set_led(LED.ANC_ANTI_ICE, array_has_positives(anti_ice))
+			set_led(LED.ANC_ANTI_ICE, array_has_positives(anti_ice, 10))
 		else
-			set_led(LED.ANC_ANTI_ICE, not array_has_positives(anti_ice))
+			set_led(LED.ANC_ANTI_ICE, not array_has_positives(anti_ice, 10))
 		end
 
 		-- STARTER ENGAGED
