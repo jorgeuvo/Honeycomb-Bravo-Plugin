@@ -537,18 +537,10 @@ local LED = {
 			end
 
 			-- ANTI ICE
-			if PROFILE == "Toliss/32x" then
-				if array_has_positives(anti_ice) then
-					set_led(LED.ANC_ANTI_ICE, true)
-				else
-					set_led(LED.ANC_ANTI_ICE, false)
-				end
+			if array_has_positives(anti_ice) then
+				set_led(LED.ANC_ANTI_ICE, not anti_ice_flip)
 			else
-				if not anti_ice_flip then
-					set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
-				else
-					set_led(LED.ANC_ANTI_ICE, not int_to_bool(anti_ice[0]))
-				end
+				set_led(LED.ANC_ANTI_ICE, anti_ice_flip)
 			end
 
 			-- STARTER ENGAGED
