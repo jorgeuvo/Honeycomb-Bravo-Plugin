@@ -115,8 +115,8 @@ function get_ap_state(array)
 end
 
 function array_has_true(array)
-	for i = 0, 7 do
-		if array[i] == 1 then
+	for _, value in ipairs(array) do
+		if value == 1 then
 			return true
 		end
 	end
@@ -125,8 +125,8 @@ function array_has_true(array)
 end
 
 function array_has_positives(array)
-	for i = 0, 7 do
-		if array[i] > 0.01 then
+	for _, value in ipairs(array) do
+		if value > 0.01 then
 			return true
 		end
 	end
