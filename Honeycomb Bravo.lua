@@ -34,7 +34,7 @@ local debug_mode = false
 
 if bravo == nil then
 	write_log('ERROR No Honeycomb Bravo Throttle Quadrant detected. Debug mode only.')
-	-- text to speech warning so a pilot doesn't waste time setting up the flight 
+	-- text to speech warning so a pilot doesn't waste time setting up the flight
 	--   only to find bravo is not connected
 	XPLMSpeakString("No Honeycomb Bravo Throttle Quadrant detected. Debug mode only.")
 	debug_mode = true
@@ -67,7 +67,7 @@ elseif PLANE_ICAO == "B763" or PLANE_ICAO == "B764" then
 elseif PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
 	-- Laminar C172
 	PROFILE = "laminar/C172"
-elseif PLANE_ICAO == "A319" or PLANE_ICAO == "A20N"  or PLANE_ICAO == "A321" or PLANE_ICAO == "A21N" or PLANE_ICAO == "A346" then
+elseif PLANE_ICAO == "A319" or PLANE_ICAO == "A20N" or PLANE_ICAO == "A321" or PLANE_ICAO == "A21N" or PLANE_ICAO == "A346" then
 	-- Toliss A32x
 	PROFILE = "Toliss/32x"
 	NUM_ENGINES = 2
@@ -142,34 +142,34 @@ end
 
 -- LED definitions
 local LED = {
-	FCU_HDG =			{1, 1},
-	FCU_NAV =			{1, 2},
-	FCU_APR =			{1, 3},
-	FCU_REV =			{1, 4},
-	FCU_ALT =			{1, 5},
-	FCU_VS =			{1, 6},
-	FCU_IAS =			{1, 7},
-	FCU_AP =			{1, 8},
-	LDG_L_GREEN =		{2, 1},
-	LDG_L_RED =			{2, 2},
-	LDG_N_GREEN =		{2, 3},
-	LDG_N_RED =			{2, 4},
-	LDG_R_GREEN =		{2, 5},
-	LDG_R_RED =			{2, 6},
-	ANC_MSTR_WARNG =	{2, 7},
-	ANC_ENG_FIRE =		{2, 8},
-	ANC_OIL =			{3, 1},
-	ANC_FUEL =			{3, 2},
-	ANC_ANTI_ICE =		{3, 3},
-	ANC_STARTER =		{3, 4},
-	ANC_APU =			{3, 5},
-	ANC_MSTR_CTN =		{3, 6},
-	ANC_VACUUM =		{3, 7},
-	ANC_HYD =			{3, 8},
-	ANC_AUX_FUEL =		{4, 1},
-	ANC_PRK_BRK =		{4, 2},
-	ANC_VOLTS =			{4, 3},
-	ANC_DOOR =			{4, 4},
+	FCU_HDG = { 1, 1 },
+	FCU_NAV = { 1, 2 },
+	FCU_APR = { 1, 3 },
+	FCU_REV = { 1, 4 },
+	FCU_ALT = { 1, 5 },
+	FCU_VS = { 1, 6 },
+	FCU_IAS = { 1, 7 },
+	FCU_AP = { 1, 8 },
+	LDG_L_GREEN = { 2, 1 },
+	LDG_L_RED = { 2, 2 },
+	LDG_N_GREEN = { 2, 3 },
+	LDG_N_RED = { 2, 4 },
+	LDG_R_GREEN = { 2, 5 },
+	LDG_R_RED = { 2, 6 },
+	ANC_MSTR_WARNG = { 2, 7 },
+	ANC_ENG_FIRE = { 2, 8 },
+	ANC_OIL = { 3, 1 },
+	ANC_FUEL = { 3, 2 },
+	ANC_ANTI_ICE = { 3, 3 },
+	ANC_STARTER = { 3, 4 },
+	ANC_APU = { 3, 5 },
+	ANC_MSTR_CTN = { 3, 6 },
+	ANC_VACUUM = { 3, 7 },
+	ANC_HYD = { 3, 8 },
+	ANC_AUX_FUEL = { 4, 1 },
+	ANC_PRK_BRK = { 4, 2 },
+	ANC_VOLTS = { 4, 3 },
+	ANC_DOOR = { 4, 4 },
 }
 
 function write_leds_to_log(buffer)
@@ -493,7 +493,7 @@ function handle_led_changes()
 		local gear_leds = {}
 
 		for i = 1, 3 do
-			gear_leds[i] = {nil, nil} -- green, red
+			gear_leds[i] = { nil, nil } -- green, red
 
 			if retractable_gear[0] == 0 then
 				-- No retractable landing gear
@@ -526,14 +526,13 @@ function handle_led_changes()
 
 		-- ENGINE/APU FIRE
 		if PROFILE == 'Toliss/32x' then
-
 			my_fire = false
-			if apu_fire[20]>0 then
+			if apu_fire[20] > 0 then
 				my_fire = true
 			end
 			for i = 11, 17 do
-				if i == 11 or i==13 or i == 15 or i==17 then
-					if eng_fire[i]~=nil and eng_fire[i] > 0 then
+				if i == 11 or i == 13 or i == 15 or i == 17 then
+					if eng_fire[i] ~= nil and eng_fire[i] > 0 then
 						my_fire = true
 						break
 					end
@@ -547,8 +546,8 @@ function handle_led_changes()
 		-- LOW OIL PRESSURE
 		if PROFILE == "Toliss/32x" then
 			low_oil_light = false
-			for i = 0, NUM_ENGINES-1 do
-				if oil_low_p[i]~=nil and oil_low_p[i] < 0.075 then
+			for i = 0, NUM_ENGINES - 1 do
+				if oil_low_p[i] ~= nil and oil_low_p[i] < 0.075 then
 					low_oil_light = true
 					break
 				end
@@ -561,8 +560,8 @@ function handle_led_changes()
 		-- LOW FUEL PRESSURE
 		if PROFILE == "Toliss/32x" then
 			low_fuel_light = false
-			for i = 0, NUM_ENGINES-1 do
-				if fuel_low_p[i]~=nil and fuel_low_p[i] < 0.075 then
+			for i = 0, NUM_ENGINES - 1 do
+				if fuel_low_p[i] ~= nil and fuel_low_p[i] < 0.075 then
 					low_fuel_light = true
 					break
 				end
@@ -573,10 +572,10 @@ function handle_led_changes()
 		end
 
 		-- ANTI ICE
-		if array_has_positives(anti_ice) then
-			set_led(LED.ANC_ANTI_ICE, not anti_ice_flip)
+		if not anti_ice_flip then
+			set_led(LED.ANC_ANTI_ICE, array_has_positives(anti_ice))
 		else
-			set_led(LED.ANC_ANTI_ICE, anti_ice_flip)
+			set_led(LED.ANC_ANTI_ICE, not array_has_positives(anti_ice))
 		end
 
 		-- STARTER ENGAGED
@@ -701,15 +700,13 @@ function handle_led_changes()
 		if door_state == 2 then
 			set_led(LED.ANC_DOOR, DOOR_LAST_STATE)
 
-			if os.clock()*1000 - DOOR_LAST_FLASHING > 200 then
+			if os.clock() * 1000 - DOOR_LAST_FLASHING > 200 then
 				DOOR_LAST_STATE = not DOOR_LAST_STATE
-				DOOR_LAST_FLASHING = os.clock()*1000
+				DOOR_LAST_FLASHING = os.clock() * 1000
 			end
 		else
 			set_led(LED.ANC_DOOR, door_state == 1)
 		end
-
-			
 	elseif master_state == true then
 		-- No bus voltage, disable all LEDs
 		master_state = false
@@ -935,10 +932,10 @@ create_command(
 
 for i = 1, 8 do
 	create_command(
-		'HoneycombBravo/thrust_reverser_'..i,
-		'Hold thrust reverser #'..i..' on.',
-		'reverser('..i..', true)',
+		'HoneycombBravo/thrust_reverser_' .. i,
+		'Hold thrust reverser #' .. i .. ' on.',
+		'reverser(' .. i .. ', true)',
 		'',
-		'reverser('..i..', false)'
+		'reverser(' .. i .. ', false)'
 	)
 end
