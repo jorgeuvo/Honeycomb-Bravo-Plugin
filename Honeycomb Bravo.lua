@@ -636,50 +636,65 @@ local LED = {
 			end
 
 			-- DOOR
-			local door_bool = false
+			local door_state = 0 -- 0 closed, 1 open, 2 moving
 
 			if canopy[0] > 0.01 then
-				door_bool = true
+				if canopy[0] < 0.99 then
+					door_state = 2
+				else
+					door_state = 1
+				end
 			end
 
-			if door_bool == false then
+			if door_state == 0 then
 				for i = 0, 9 do
 					if doors[i] > 0.01 then
-						door_bool = true
+						if doors[i] < 0.99 then
+							door_state = 2
+						else
+							door_state = 1
+						end
 						break
 					end
 				end
 			end
 
-			if door_bool == false then
+			if door_state == 0 then
 				for i = 0, 9 do
-					if PROFILE == "Toliss/32x" and i == 0 then
-						-- special case handling for aft cargo door (toliss/32x)
-						if doors_array[i] ~= nil and array_has_positives(doors_array[i]) then
-							door_bool = true
-							break
-						end
-					else
-						if doors_array[i] ~= nil and doors_array[i][0] > 0.01 then
-							door_bool = true
-							break
+					if doors_array[i] ~= nil then
+						for _, value in ipairs(doors_array[i]) do
+							if value > 0.01 then
+								if value < 0.99 then
+									door_state = 2
+								else
+									door_state = 1
+								end
+								break
+							end
 						end
 					end
 				end
 			end
 
-			if door_bool == false then
-				door_bool = int_to_bool(cabin_door[0])
+			if door_state == 0 then
+				if cabin_door[0] > 0.01 then
+					if cabin_door[0] < 0.99 then
+						door_state = 2
+					else
+						door_state = 1
+					end
+				end
 			end
 
-			if cabin_door[0]>0.01 and cabin_door[0]<0.99 then
+			if door_state == 2 then
 				set_led(LED.ANC_DOOR, DOOR_LAST_STATE)
+
 				if os.clock()*1000 - DOOR_LAST_FLASHING > 200 then
 					DOOR_LAST_STATE = not DOOR_LAST_STATE
 					DOOR_LAST_FLASHING = os.clock()*1000
 				end
 			else
-				set_led(LED.ANC_DOOR, door_bool)
+				set_led(LED.ANC_DOOR, door_state == 1)
 			end
 
 			
