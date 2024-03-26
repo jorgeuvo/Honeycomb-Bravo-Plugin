@@ -120,9 +120,12 @@ function get_ap_state(array)
 	end
 end
 
-function array_has_true(array)
-	for _, value in ipairs(array) do
-		if value == 1 then
+function array_has_true(array, max_lenght)
+	if max_lenght == nil then
+		max_lenght = 8
+	end
+	for i = 0, max_lenght do
+		if array[i] == 1 then
 			return true
 		end
 	end
