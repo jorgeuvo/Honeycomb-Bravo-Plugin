@@ -44,6 +44,7 @@ local PROFILE = "default"
 -- Switches for specific plugin behavior that transcends profiles
 local SHOW_ANC_HYD = true
 local ONLY_USE_AUTOPILOT_STATE = false
+local NUM_ENGINES = 0
 
 if PLANE_ICAO == "B738" then
 	-- Laminar B738 / Zibo B738
@@ -63,9 +64,9 @@ elseif PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
 elseif PLANE_ICAO == "A319" or PLANE_ICAO == "A20N"  or PLANE_ICAO == "A321" or PLANE_ICAO == "A21N" or PLANE_ICAO == "A346" then
 	-- Toliss A32x
 	PROFILE = "Toliss/32x"
-	num_of_engines = 2
+	NUM_ENGINES = 2
 	if PLANE_ICAO == "A346" then
-		num_of_engines = 4
+		NUM_ENGINES = 4
 	end
 end
 
@@ -357,8 +358,9 @@ local LED = {
 		doors_array[2] = dataref_table('AirbusFBW/BulkDoor')
 	end
 
-	last_flashing = -1
-	last_door_light = true
+	local DOOR_LAST_FLASHING = -1
+	local DOOR_LAST_STATE = true
+
 	function handle_led_changes()
 		if bus_voltage[0] > 0 then
 			master_state = true
@@ -509,7 +511,7 @@ local LED = {
 			-- LOW OIL PRESSURE
 			if PROFILE == "Toliss/32x" then
 				low_oil_light = false
-				for i = 0, num_of_engines-1 do
+				for i = 0, NUM_ENGINES-1 do
 					if oil_low_p[i]~=nil and oil_low_p[i] < 0.075 then
 						low_oil_light = true
 						break
@@ -523,7 +525,7 @@ local LED = {
 			-- LOW FUEL PRESSURE
 			if PROFILE == "Toliss/32x" then
 				low_fuel_light = false
-				for i = 0, num_of_engines-1 do
+				for i = 0, NUM_ENGINES-1 do
 					if fuel_low_p[i]~=nil and fuel_low_p[i] < 0.075 then
 						low_fuel_light = true
 						break
@@ -671,10 +673,10 @@ local LED = {
 			end
 
 			if cabin_door[0]>0.01 and cabin_door[0]<0.99 then
-				set_led(LED.ANC_DOOR, last_door_light)
-				if os.clock()*1000 - last_flashing > 200 then
-					last_door_light = not last_door_light
-					last_flashing = os.clock()*1000
+				set_led(LED.ANC_DOOR, DOOR_LAST_STATE)
+				if os.clock()*1000 - DOOR_LAST_FLASHING > 200 then
+					DOOR_LAST_STATE = not DOOR_LAST_STATE
+					DOOR_LAST_FLASHING = os.clock()*1000
 				end
 			else
 				set_led(LED.ANC_DOOR, door_bool)
