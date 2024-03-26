@@ -310,6 +310,7 @@ local LED = {
 	local aux_fuel_pump_r = dataref_table('sim/cockpit2/fuel/transfer_pump_right')
 	local parking_brake = dataref_table('sim/cockpit2/controls/parking_brake_ratio')
 	local volt_low = dataref_table('sim/cockpit2/annunciators/low_voltage')
+	local volt_low_min = -1 -- disable minimum
 	local canopy = dataref_table('sim/flightmodel2/misc/canopy_open_ratio')
 	local doors = dataref_table('sim/flightmodel2/misc/door_open_ratio')
 	local doors_array = {}
@@ -332,6 +333,7 @@ local LED = {
 		doors_array[7] = dataref_table('1-sim/anim/doors/cargoSide/anim')
 		doors_array[8] = dataref_table('anim/doorC') -- 757 freighter cargo door
 		volt_low = dataref_table('sim/cockpit2/electrical/bus_volts')
+		volt_low_min = 28
 	elseif PROFILE == "FF/767" then
 		master_caution = dataref_table('sim/cockpit/warnings/annunciators/master_caution')
 		doors_array[0] = dataref_table('1-sim/anim/doors/FL/anim')
@@ -342,6 +344,7 @@ local LED = {
 		doors_array[5] = dataref_table('1-sim/anim/doors/cargoBack/anim')
 		doors_array[6] = dataref_table('1-sim/anim/doors/cargoSide/anim')
 		volt_low = dataref_table('sim/cockpit2/electrical/bus_volts')
+		volt_low_min = 25
 	elseif PROFILE == "Toliss/32x" then
 		master_caution = dataref_table('AirbusFBW/MasterCaut')
 		vacuum = dataref_table('sim/cockpit/misc/vacuum')
@@ -350,6 +353,7 @@ local LED = {
 		-- aux_fuel_pump_r = dataref_table('sim/cockpit/switches/fuel_pump_r')
 		parking_brake = dataref_table('AirbusFBW/ParkBrake')
 		volt_low = dataref_table('sim/cockpit2/electrical/battery_amps')
+		volt_low_min = 0
 		-- canopy = dataref_table('sim/cockpit/switches/canopy_open')
 		-- doors = dataref_table('sim/cockpit/switches/door_open')
 		cabin_door = dataref_table('AirbusFBW/PaxDoorArray')
@@ -605,24 +609,8 @@ local LED = {
 			set_led(LED.ANC_PRK_BRK, parking_brake_bool)
 
 			-- LOW VOLTS
-			if PROFILE == "Toliss/32x" then
-				if volt_low[0] < 0 then
-					set_led(LED.ANC_VOLTS, true)
-				else
-					set_led(LED.ANC_VOLTS, false)
-				end
-			elseif PROFILE == "FF/757" then
-				if volt_low[0] < 28 then
-					set_led(LED.ANC_VOLTS, true)
-				else
-					set_led(LED.ANC_VOLTS, false)
-				end
-			elseif PROFILE == "FF/767" then
-				if volt_low[0] < 25 then
-					set_led(LED.ANC_VOLTS, true)
-				else
-					set_led(LED.ANC_VOLTS, false)
-				end
+			if volt_low_min ~= -1 then
+				set_led(LED.ANC_VOLTS, volt_low[0] < volt_low_min)
 			else
 				set_led(LED.ANC_VOLTS, int_to_bool(volt_low[0]))
 			end
