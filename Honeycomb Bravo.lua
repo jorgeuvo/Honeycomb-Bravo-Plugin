@@ -60,6 +60,13 @@ elseif PLANE_ICAO == "B763" or PLANE_ICAO == "B764" then
 elseif PLANE_ICAO == "C172" and AIRCRAFT_FILENAME == "Cessna_172SP.acf" then
 	-- Laminar C172
 	PROFILE = "laminar/C172"
+elseif PLANE_ICAO == "A319" or PLANE_ICAO == "A20N"  or PLANE_ICAO == "A321" or PLANE_ICAO == "A21N" or PLANE_ICAO == "A346" then
+	-- Toliss A32x
+	PROFILE = "Toliss/32x"
+	num_of_engines = 2
+	if PLANE_ICAO == "A346" then
+		num_of_engines = 4
+	end
 end
 
 if PLANE_ICAO == "C172" or PLANE_ICAO == "SR22" then
@@ -109,6 +116,16 @@ end
 function array_has_true(array)
 	for i = 0, 7 do
 		if array[i] == 1 then
+			return true
+		end
+	end
+
+	return false
+end
+
+function array_has_positives(array)
+	for i = 0, 7 do
+		if array[i] > 0.01 then
 			return true
 		end
 	end
@@ -238,6 +255,16 @@ local LED = {
 		vs = dataref_table('laminar/B738/autopilot/vs_status')
 		ias = dataref_table('laminar/B738/autopilot/speed_status1')
 		ap = dataref_table('laminar/B738/autopilot/cmd_a_status')
+	elseif PROFILE == "Toliss/32x" then
+		hdg = dataref_table('AirbusFBW/APLateralMode') -- 101
+		nav = dataref_table('AirbusFBW/APLateralMode') -- 1
+		apr = dataref_table('AirbusFBW/APPRilluminated')
+		rev = dataref_table('AirbusFBW/ENGRevArray')
+		alt = dataref_table('AirbusFBW/ALTmanaged') -- 101
+		vs = dataref_table('AirbusFBW/APVerticalMode') --107
+		ias = dataref_table('AirbusFBW/SPDmanaged')
+		ap1 = dataref_table('AirbusFBW/AP1Engage')
+		ap2 = dataref_table('AirbusFBW/AP2Engage')
 	end
 
 
@@ -263,6 +290,15 @@ local LED = {
 		fire = dataref_table('sim/cockpit/warnings/annunciators/engine_fires')
 		anti_ice = dataref_table('sim/cockpit2/ice/ice_window_heat_on')
 		anti_ice_flip = true
+	elseif PROFILE == "Toliss/32x" then
+		master_warn = dataref_table('AirbusFBW/MasterWarn')
+		apu_fire = dataref_table('AirbusFBW/OHPLightsATA26')
+		eng_fire = dataref_table('AirbusFBW/OHPLightsATA70')
+		oil_low_p = dataref_table('AirbusFBW/ENGOilPressArray')
+		fuel_low_p = dataref_table('AirbusFBW/ENGFuelFlowArray')
+		anti_ice = dataref_table('AirbusFBW/OHPLightsATA30')
+		starter = dataref_table('AirbusFBW/StartValveArray')
+		apu = dataref_table('AirbusFBW/APUAvail')
 	end
 
 	-- Annunciator panel - bottom row
@@ -284,6 +320,7 @@ local LED = {
 		doors = dataref_table('laminar/B738/annunciator/six_pack_doors')
 		cabin_door = dataref_table('laminar/B738/toggle_switch/flt_dk_door')
 	elseif PROFILE == "FF/757" then
+		master_caution = dataref_table('inst/warning')
 		doors_array[0] = dataref_table('anim/door/FL')
 		doors_array[1] = dataref_table('anim/door/FR')
 		doors_array[2] = dataref_table('anim/door/ML')
@@ -293,7 +330,9 @@ local LED = {
 		doors_array[6] = dataref_table('1-sim/anim/doors/cargoBack/anim')
 		doors_array[7] = dataref_table('1-sim/anim/doors/cargoSide/anim')
 		doors_array[8] = dataref_table('anim/doorC') -- 757 freighter cargo door
+		volt_low = dataref_table('sim/cockpit2/electrical/bus_volts')
 	elseif PROFILE == "FF/767" then
+		master_caution = dataref_table('sim/cockpit/warnings/annunciators/master_caution')
 		doors_array[0] = dataref_table('1-sim/anim/doors/FL/anim')
 		doors_array[1] = dataref_table('1-sim/anim/doors/FR/anim')
 		doors_array[2] = dataref_table('1-sim/anim/doors/BL/anim')
@@ -301,8 +340,25 @@ local LED = {
 		doors_array[4] = dataref_table('1-sim/anim/doors/cargoFront/anim')
 		doors_array[5] = dataref_table('1-sim/anim/doors/cargoBack/anim')
 		doors_array[6] = dataref_table('1-sim/anim/doors/cargoSide/anim')
+		volt_low = dataref_table('sim/cockpit2/electrical/bus_volts')
+	elseif PROFILE == "Toliss/32x" then
+		master_caution = dataref_table('AirbusFBW/MasterCaut')
+		vacuum = dataref_table('sim/cockpit/misc/vacuum')
+		hydro_low_p = dataref_table('AirbusFBW/HydSysPressArray')
+		-- aux_fuel_pump_l = dataref_table('sim/cockpit/switches/fuel_pump_l')
+		-- aux_fuel_pump_r = dataref_table('sim/cockpit/switches/fuel_pump_r')
+		parking_brake = dataref_table('AirbusFBW/ParkBrake')
+		volt_low = dataref_table('sim/cockpit2/electrical/battery_amps')
+		-- canopy = dataref_table('sim/cockpit/switches/canopy_open')
+		-- doors = dataref_table('sim/cockpit/switches/door_open')
+		cabin_door = dataref_table('AirbusFBW/PaxDoorArray')
+		doors_array[0] = dataref_table('AirbusFBW/PaxDoorArray')
+		doors_array[1] = dataref_table('AirbusFBW/CargoDoorArray')
+		doors_array[2] = dataref_table('AirbusFBW/BulkDoor')
 	end
 
+	last_flashing = -1
+	last_door_light = true
 	function handle_led_changes()
 		if bus_voltage[0] > 0 then
 			master_state = true
@@ -321,11 +377,26 @@ local LED = {
 				set_led(LED.FCU_HDG, false)
 				set_led(LED.FCU_NAV, false)
 			else
-				-- HDG
-				set_led(LED.FCU_HDG, get_ap_state(hdg))
+				if PROFILE == "Toliss/32x" then
+					if int_to_bool(ap1[0]) or int_to_bool(ap2[0]) then
+						if hdg[0] == 101 then
+							set_led(LED.FCU_HDG, true)
+							set_led(LED.FCU_NAV, false)
+						else 
+							set_led(LED.FCU_HDG, false)
+							set_led(LED.FCU_NAV, true)
+						end
+					else
+						set_led(LED.FCU_HDG, false)
+						set_led(LED.FCU_NAV, false)
+					end
+				else
+					-- HDG
+					set_led(LED.FCU_HDG, get_ap_state(hdg))
 
-				-- NAV
-				set_led(LED.FCU_NAV, get_ap_state(nav))
+					-- NAV
+					set_led(LED.FCU_NAV, get_ap_state(nav))		
+				end
 			end
 
 			-- APR
@@ -343,10 +414,26 @@ local LED = {
 				alt_bool = false
 			end
 
-			set_led(LED.FCU_ALT, alt_bool)
+			if PROFILE == "Toliss/32x" then
+				if alt[0] == 0 or (not int_to_bool(ap1[0]) and not int_to_bool(ap2[0])) then
+					set_led(LED.FCU_ALT, false)
+				else
+					set_led(LED.FCU_ALT, true)
+				end
+			else 
+				set_led(LED.FCU_ALT, alt_bool)
+			end
 
 			-- VS
-			set_led(LED.FCU_VS, get_ap_state(vs))
+			if PROFILE == "Toliss/32x" then
+				if vs[0] == 107 and (int_to_bool(ap1[0]) or int_to_bool(ap2[0])) then
+					set_led(LED.FCU_VS, true)
+				else
+					set_led(LED.FCU_VS, false)
+				end
+			else 
+				set_led(LED.FCU_VS, get_ap_state(vs))
+			end
 
 			-- IAS
 			if bitwise.band(autopilot_state[0], 8) > 0 then
@@ -358,7 +445,11 @@ local LED = {
 			end
 
 			-- AUTOPILOT
-			set_led(LED.FCU_AP, int_to_bool(ap[0]))
+			if PROFILE == "Toliss/32x" then
+				set_led(LED.FCU_AP, int_to_bool(ap1[0]) or int_to_bool(ap2[0]))
+			else
+				set_led(LED.FCU_AP, int_to_bool(ap[0]))
+			end
 
 			-- Landing gear
 			local gear_leds = {}
@@ -395,20 +486,67 @@ local LED = {
 			-- MASTER WARNING
 			set_led(LED.ANC_MSTR_WARNG, int_to_bool(master_warn[0]))
 
-			-- ENGINE FIRE
-			set_led(LED.ANC_ENG_FIRE, array_has_true(fire))
+			-- ENGINE/APU FIRE 
+			if PROFILE == 'Toliss/32x' then
+
+				my_fire = false
+				if apu_fire[20]>0 then
+					my_fire = true
+				end 
+				for i = 11, 17 do
+					if i == 11 or i==13 or i == 15 or i==17 then
+						if eng_fire[i]~=nil and eng_fire[i] > 0 then
+							my_fire = true
+							break
+						end
+					end
+				end
+				set_led(LED.ANC_ENG_FIRE, my_fire)
+			else
+				set_led(LED.ANC_ENG_FIRE, array_has_true(fire))
+			end
 
 			-- LOW OIL PRESSURE
-			set_led(LED.ANC_OIL, array_has_true(oil_low_p))
+			if PROFILE == "Toliss/32x" then
+				low_oil_light = false
+				for i = 0, num_of_engines-1 do
+					if oil_low_p[i]~=nil and oil_low_p[i] < 0.075 then
+						low_oil_light = true
+						break
+					end
+				end
+				set_led(LED.ANC_OIL, low_oil_light)
+			else
+				set_led(LED.ANC_OIL, array_has_true(oil_low_p))
+			end
 
 			-- LOW FUEL PRESSURE
-			set_led(LED.ANC_FUEL, array_has_true(fuel_low_p))
+			if PROFILE == "Toliss/32x" then
+				low_fuel_light = false
+				for i = 0, num_of_engines-1 do
+					if fuel_low_p[i]~=nil and fuel_low_p[i] < 0.075 then
+						low_fuel_light = true
+						break
+					end
+				end
+				set_led(LED.ANC_FUEL, low_fuel_light)
+			else
+				set_led(LED.ANC_FUEL, array_has_true(fuel_low_p))
+			end
 
 			-- ANTI ICE
-			if not anti_ice_flip then
-				set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
+			if PROFILE == "Toliss/32x" then
+				if array_has_positives(anti_ice) then
+					set_led(LED.ANC_ANTI_ICE, true)
+				else
+					set_led(LED.ANC_ANTI_ICE, false)
+				end
 			else
-				set_led(LED.ANC_ANTI_ICE, not int_to_bool(anti_ice[0]))
+				if not anti_ice_flip then
+					set_led(LED.ANC_ANTI_ICE, int_to_bool(anti_ice[0]))
+				else
+					set_led(LED.ANC_ANTI_ICE, not int_to_bool(anti_ice[0]))
+				end
 			end
 
 			-- STARTER ENGAGED
@@ -421,14 +559,33 @@ local LED = {
 			set_led(LED.ANC_MSTR_CTN, int_to_bool(master_caution[0]))
 
 			-- VACUUM
-			set_led(LED.ANC_VACUUM, int_to_bool(vacuum[0]))
-
-			-- LOW HYD PRESSURE
-			if SHOW_ANC_HYD then
-				set_led(LED.ANC_HYD, int_to_bool(hydro_low_p[0]))
+			if PROFILE == "Toliss/32x" then
+				if vacuum[0] < 1 then
+					set_led(LED.ANC_VACUUM, true)
+				else
+					set_led(LED.ANC_VACUUM, false)
+				end
 			else
-				-- For planes that don't have a hydraulic pressure annunciator
-				set_led(LED.ANC_HYD, false)
+				set_led(LED.ANC_VACUUM, int_to_bool(vacuum[0]))
+			end
+			
+			-- LOW HYD PRESSURE
+			if PROFILE == "Toliss/32x" then
+				low_hyd_light = true
+				for i = 0, 2 do
+					if hydro_low_p[i] > 2500 then
+						low_hyd_light = false
+						break
+					end
+				end
+				set_led(LED.ANC_HYD, low_hyd_light)
+			else
+				if SHOW_ANC_HYD then
+					set_led(LED.ANC_HYD, int_to_bool(hydro_low_p[0]))
+				else
+					-- For planes that don't have a hydraulic pressure annunciator
+					set_led(LED.ANC_HYD, false)
+				end
 			end
 
 			-- AUX FUEL PUMP
@@ -454,7 +611,27 @@ local LED = {
 			set_led(LED.ANC_PRK_BRK, parking_brake_bool)
 
 			-- LOW VOLTS
-			set_led(LED.ANC_VOLTS, int_to_bool(volt_low[0]))
+			if PROFILE == "Toliss/32x" then
+				if volt_low[0] < 0 then
+					set_led(LED.ANC_VOLTS, true)
+				else
+					set_led(LED.ANC_VOLTS, false)
+				end
+			elseif PROFILE == "FF/757" then
+				if volt_low[0] < 28 then
+					set_led(LED.ANC_VOLTS, true)
+				else
+					set_led(LED.ANC_VOLTS, false)
+				end
+			elseif PROFILE == "FF/767" then
+				if volt_low[0] < 25 then
+					set_led(LED.ANC_VOLTS, true)
+				else
+					set_led(LED.ANC_VOLTS, false)
+				end
+			else
+				set_led(LED.ANC_VOLTS, int_to_bool(volt_low[0]))
+			end
 
 			-- DOOR
 			local door_bool = false
@@ -474,9 +651,17 @@ local LED = {
 
 			if door_bool == false then
 				for i = 0, 9 do
-					if doors_array[i] ~= nil and doors_array[i][0] > 0.01 then
-						door_bool = true
-						break
+					if PROFILE == "Toliss/32x" and i == 0 then
+						-- special case handling for aft cargo door (toliss/32x)
+						if doors_array[i] ~= nil and array_has_positives(doors_array[i]) then
+							door_bool = true
+							break
+						end
+					else
+						if doors_array[i] ~= nil and doors_array[i][0] > 0.01 then
+							door_bool = true
+							break
+						end
 					end
 				end
 			end
@@ -485,7 +670,17 @@ local LED = {
 				door_bool = int_to_bool(cabin_door[0])
 			end
 
-			set_led(LED.ANC_DOOR, door_bool)
+			if cabin_door[0]>0.01 and cabin_door[0]<0.99 then
+				set_led(LED.ANC_DOOR, last_door_light)
+				if os.clock()*1000 - last_flashing > 200 then
+					last_door_light = not last_door_light
+					last_flashing = os.clock()*1000
+				end
+			else
+				set_led(LED.ANC_DOOR, door_bool)
+			end
+
+			
 		elseif master_state == true then
 			-- No bus voltage, disable all LEDs
 			master_state = false
