@@ -122,7 +122,7 @@ end
 
 function array_has_true(array, max_lenght)
 	if max_lenght == nil then
-		max_lenght = 8
+		max_lenght = 16
 	end
 	for i = 0, max_lenght do
 		if array[i] == 1 then
@@ -134,6 +134,9 @@ function array_has_true(array, max_lenght)
 end
 
 function array_has_positives(array, max_lenght)
+	if max_lenght == nil then
+		max_lenght = 16
+	end
 	for i = 0, max_lenght do
 		if not array[i] then
 			write_log('ERROR array_has_positives: array[' .. i .. '] is nil')
