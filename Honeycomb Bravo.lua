@@ -403,6 +403,12 @@ elseif PROFILE == "Toliss/32x" then
 	doors_array[0] = dataref_table('AirbusFBW/PaxDoorArray')
 	doors_array[1] = dataref_table('AirbusFBW/CargoDoorArray')
 	doors_array[2] = dataref_table('AirbusFBW/BulkDoor')
+elseif PROFILE == 'DH8D' then
+	volt_low = dataref_table('sim/cockpit2/electrical/battery_voltage_actual_volts')
+	volt_low_min = 20
+	cabin_door = dataref_table('FJS/Q4XP/Manips/CabinMainDoor_Anim')
+	doors_array[0] = dataref_table('FJS/Q4XP/Manips/CabinDoors_Anim')
+	doors_array[1] = dataref_table('FJS/Q4XP/Manips/CargoDoor_Anim')
 end
 
 local DOOR_LAST_FLASHING = -1
