@@ -272,6 +272,8 @@ if PROFILE == "laminar/CitX" then
 	bus_voltage = dataref_table('laminar/CitX/APU/DC_volts')
 elseif PROFILE == "B738" then
 	bus_voltage = dataref_table('laminar/B738/electric/batbus_status')
+elseif PROFILE == "Toliss/32x" then
+	bus_voltage = dataref_table('AirbusFBW/DCBusVoltages')
 end
 
 -- Datarefs configuration for Default Aircrafts.
@@ -407,7 +409,7 @@ local DOOR_LAST_FLASHING = -1
 local DOOR_LAST_STATE = true
 
 function handle_led_changes()
-	if bus_voltage[0] > 0 then
+	if bus_voltage[0] > 0 or array_has_positives(bus_voltage) then
 		master_state = true
 
 		-- HDG & NAV
